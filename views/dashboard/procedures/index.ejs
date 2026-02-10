@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+</head>
+
+<body>
+  <p>Dashboard / Procedures</p>
+  <h2>Display List Here</h2>
+  <a href="/dashboard/procedures/add"><button>Add Service</button></a>
+
+  <% procedures.forEach(procedure => { %>
+  <p><%= procedure.title %></p>
+  <img src="<%= procedure.bannerUrl %>" alt="Banner for <%= procedure.title %>" style="max-width: 200px;" />
+  <% }); %>
+
+
+</body>
+
+</html>

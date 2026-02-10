@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+
+  <%- include('../partials/header-nav') %>
+
+
+
+  <section class="mx-auto justify-center items-center px-8 md:px-4 pt-10 max-w-3xl">
+    <div>
+      <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/About/paprasboard.jpg" alt=" papras board" class="w-full pb-4 rounded-md object-cover w-[432px] h-[285px]" />
+    </div>
+    <div>
+      <p class="font-light text-lg">
+        About PAPRAS
+      </p>
+      <h3 class="font-black text-xl md:text-2xl mb-4">
+        Leaders in the field of aesthetic and reconstructive surgery in
+        the Philippines
+      </h3>
+    </div>
+
+    <div>
+      <p class="text-black text-base md:text-md leading-relaxed mb-4 text-justify">
+        The Philippine Association of Plastic, Reconstructive and
+        Aesthetic Surgeons, or PAPRAS had its humble beginnings on March
+        22, 1961. It was founded by eight renowned plastic surgeons,
+        trained internationally across America and Europe.
+      </p>
+
+      <p class="text-black text-base md:text-md leading-relaxed mb-4 text-justify">
+        Driven by their desire to pursue and sustain the practice of
+        Plastic Surgery in the country, the society approved the creation
+        of the Philippine Board of Plastic Surgery in 1971.
+      </p>
+
+      <p class="text-black text-base md:text-md leading-relaxed mb-4 text-justify">
+        The PAPRAS has become more active and relevant in recent years,
+        establishing residency programs across the nation; helping train
+        competent and highly-skilled surgeons to meet the growing trends
+        in the fields of aesthetic and reconstructive plastic surgery.
+      </p>
+
+      <p class="text-black text-base md:text-md leading-relaxed mb-4 text-justify">
+        Today, the society has rightfully assumed its role as the key
+        opinion leader as far as cosmetic and reconstructive surgery
+        issues in the country are concerned, disseminating relevant
+        information to the public thru print and broadcast media.  It has
+        also continued to serve the underserved public sectors thru its
+        numerous plastic surgical missions and outreach programs. 
+      </p>
+
+      <p class="text-black text-base md:text-md leading-relaxed mb-4 text-justify">
+        The PAPRAS has likewise stamped its class in the international
+        front thru its members who have either been actively participating
+        in international meetings or have become active in international
+        organizations, gaining international accolades in various
+        international congresses over the years.
+      </p>
+    </div>
+
+  </section>
+
+  <section class="my-16">
+    <div class="flex flex-col md:flex-row content-center gap-4 max-w-3xl mx-auto py-8 items-center">
+      <div class="w-2/5">
+        <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/About/Mission.webp" alt=" papras board" class="w-full pb-4 rounded-md" width="656" , height="498" />
+      </div>
+      <div class="w-3/5 px-2">
+        <p class="font-light text-lg">
+          Our Mission
+        </p>
+        <h3 class="font-black text-xl md:text-2xl mb-4">
+          The Philippine Association of Plastic Reconstructive and
+          Aesthetic Surgeons aims to encourage and support its members in
+          providing the highest quality of patient care; and to maintain
+          the highest possible ethical standards in the practice of the
+          profession.
+        </h3>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="max-w-5xl mx-auto text-center">
+      <h3 class="font-black text-2xl md:text-3xl mb-6">
+        The PAPRAS C.A.R.E
+      </h3>
+      <p class="text-black text-base md:text-lg leading-relaxed mb-8">
+        Choosing the right surgeon for your needs matters. We encourage
+        patients to research on their doctors and look for the following
+      </p>
+    </div>
+
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-4 gap-2">
+        <div class="flex flex-col items-center gap-2">
+          <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/About/c.png" width="100" height="100" alt="letter c" class="w-1/4 justify-self-center" />
+          <div>
+            <h4 class="text-center font-bold text-lg">
+              Certified
+            </h4>
+            <p class={`text-center ${manrope.class} text-md`}>
+              Is the doctor board-certified?
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-2">
+          <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/About/a.png" width="100" height="100" alt="letter a" class="w-1/4 justify-self-center" />
+          <div>
+            <h4 class="text-center font-bold text-lg">
+              Accredited
+            </h4>
+            <p class="text-center text-md">
+              Are his/her facilities backed up by an official license and
+              accreditation?
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-2">
+          <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/About/r.png" width="100" height="100" alt="letter r" class="w-1/4 justify-self-center" />
+          <div>
+            <h4 class="text-center font-bold text-lg">
+              Responsible
+            </h4>
+            <p class="text-center text-md">
+              Does he/she evoke sense of duty, takes full responsibility
+              of your well-being?
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-2 ">
+          <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/About/e.png" width="100" height="100" alt="letter e" class="w-1/4 justify-self-center" />
+          <div>
+            <h4 class="text-center font-bold text-lg">
+              Ethical
+            </h4>
+            <p class="text-center text-md">
+              Is the Doctor’s practice grounded on proper and ethical
+              procedures?
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto my-40">
+    <div class="max-w-3xl mx-auto text-center mb-8">
+      <h3 class={`${manrope.class} font-black text-2xl md:text-3xl mb-6`}>
+        PAPRAS Officers
+      </h3>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+
+      <% board.forEach(board => { %>
+
+      <div class="flex flex-col items-center">
+        <div class="">
+          <img src="<%= board.image %>" alt=<%= board.name%> class="w-32 h-32 rounded-full object-cover" />
+        </div>
+        <div class="px-2">
+          <h3 class="text-center font-bold text-sm h-10 mt-4">
+            <%= board.name %>
+          </h3>
+          <p class="text-center  text-xs">
+            <%= board.role %>
+          </p>
+        </div>
+      </div>
+      <% }); %>
+
+
+
+    </div>
+  </section>
+
+
+
+
+
+  <%- include('../partials/become-member') %>
+
+  <%- include('../partials/footer') %>
+
+
+
+</body>
+
+</html>

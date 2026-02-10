@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Create Blog Post</title>
+
+  <!-- Quill CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" />
+
+  <!-- Page CSS -->
+  <link rel="stylesheet" href="/css/addService.css" />
+</head>
+
+<body>
+  <h1>Create a blog post</h1>
+
+  <form id="postForm" method="POST" action="/dashboard/procedures/add">
+    <label for="title">Title</label>
+    <input id="title" name="title" type="text" placeholder="Post title" required />
+
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+      <option value="" disabled selected>Select a category</option>
+      <option value="Aesthetic">Aesthetic</option>
+      <option value="Reconstructive">Reconstructive</option>
+      <option value="Non Surgical">Non Surgical</option>
+    </select>
+
+    <label for="bannerFile">Image banner</label>
+
+    <div class="banner-row">
+      <div class="banner-left">
+        <input id="bannerFile" type="file" accept="image/*" />
+        <p class="hint">
+          Uploads to <code>/upload-banner</code> and saves the returned URL.
+        </p>
+        <div id="bannerStatus" class="status"></div>
+      </div>
+
+      <div class="banner-right">
+        <img id="bannerPreview" class="preview" alt="Banner preview" />
+      </div>
+    </div>
+
+    <input type="hidden" id="bannerUrl" name="bannerUrl" />
+
+    <label>Content</label>
+    <div id="editor"></div>
+
+    <input type="hidden" id="contentHtml" name="contentHtml" />
+
+    <button id="publishBtn" type="submit">Publish</button>
+  </form>
+
+  <!-- Quill JS -->
+  <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+
+  <!-- Page JS -->
+  <script src="/js/addService.js"></script>
+</body>
+
+</html>

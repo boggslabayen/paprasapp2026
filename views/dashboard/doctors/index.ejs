@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+</head>
+
+<body>
+  <p>Dashboard / Doctors</p>
+  <h2>Display List Here</h2>
+
+  <a href="/dashboard/doctors/add"><button>Add Doctor</button></a>
+
+  <div>
+    <% doctors.forEach(doctor => { %>
+    <h2><%= doctor.firstName %> <%= doctor.lastName %> - <%= doctor.location %></h2>
+    <% }) %>
+  </div>
+
+
+</body>
+
+</html>

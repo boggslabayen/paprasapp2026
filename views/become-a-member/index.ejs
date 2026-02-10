@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body>
+  <%- include('../partials/header-nav') %>
+
+  <main>
+    <section class="my-8 ">
+      <div class="md:flex items-center content-center gap-2 max-w-4xl mx-auto py-8">
+        <div class="md:w-2/3">
+          <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/becomeamember/1.png" width="656" height="498" class="h-full pb-8 md:pb-0" />
+        </div>
+        <div class="md:w-3/5 px-8 md:px-0">
+          <p class="font-light text-lg">
+            Become a PAPRAS Member
+          </p>
+          <h3 class="font-black text-2xl md:text-3xl mb-4">
+            Shaping the Future of Philippine Plastic Surgery
+          </h3>
+          <p class="text-black text-base md:text-lg leading-relaxed mb-8">
+            Join PAPRAS and be part of a community dedicated to advancing
+            excellence, innovation, and integrity in Philippine plastic,
+            reconstructive, and aesthetic surgery.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="max-w-6xl mx-auto">
+      <section>
+        <div class="max-w-5xl mx-auto text-center">
+          <h3 class="font-black text-2xl md:text-3xl mb-6">
+            Requirements
+          </h3>
+        </div>
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-4 gap-2">
+            <div class="flex flex-col items-center gap-2">
+              <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/becomeamember/R1.png" class="w-1/2 justify-self-center max-w-[100px] h-[100px]" />
+              <div>
+                <p class="text-center text-sm max-w-[200px]">
+                  Successfully completed a minimum of 3 years of General
+                  Surgery training.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-2">
+              <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/becomeamember/R2.png" class="w-1/2 justify-self-center max-w-[100px] h-[100px]" />
+              <div>
+                <p class="text-center text-sm max-w-[200px">
+                  Undertook 3 years of Plastic Surgery training at an
+                  accredited institution.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-2">
+              <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/becomeamember/R3.png" class="w-1/2 justify-self-center max-w-[100px] h-[100px]" />
+              <div>
+                <p class="text-center text-sm max-w-[200px">
+                  Passed both the oral and written examinations administered
+                  by the Philippine Board of Plastic Surgery (PBPS) after
+                  completing training.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-2 ">
+              <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/becomeamember/R4.png" class="w-1/2 justify-self-center max-w-[100px] h-[100px]" />
+              <div>
+                <p class="text-center text-sm max-w-[200px">
+                  Eligible board passers can become PAPRAS Fellows.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="my-20">
+      <div class="max-w-3xl mx-auto text-center">
+        <h3 class="font-black text-2xl md:text-3xl mb-6">
+          Training Programs
+        </h3>
+        <p class="text-black text-base md:text-lg leading-relaxed mb-8">
+          PAPRAS encourages learning and growth about the latest advancements in
+          reconstructive and cosmetic plastic surgery procedures
+        </p>
+      </div>
+
+      <div class="px-4 grid grid-cols-3 gap-4 md:max-w-3xl mx-auto pb-16">
+
+        <% programs.forEach(program => { %>
+        <div class="pb-8">
+          <div>
+            <img src="<%= program.image %>" width="432" height="285" alt="event image" class="w-full pb-8 rounded-md" />
+          </div>
+
+          <div>
+            <h4 class="font-bold text-sm text-center">
+              <%= program.name %>
+            </h4>
+          </div>
+        </div>
+        <% }) %>
+
+      </div>
+    </section>
+
+    <section class="my-20">
+      <div class="max-w-3xl mx-auto text-center">
+        <h3 class="font-black text-2xl md:text-3xl mb-6">
+          Consortium I
+        </h3>
+
+      </div>
+
+      <div class="px-4 grid grid-cols-3 gap-4 md:max-w-3xl mx-auto pb-16">
+
+        <% consortium1.forEach(c1 => { %>
+        <div class="pb-8">
+          <div>
+            <img src="<%= c1.image %>" width="432" height="285" alt="event image" class="w-full pb-8 rounded-md" />
+          </div>
+
+          <div>
+            <h4 class="font-bold text-sm text-center">
+              <%= c1.name %>
+            </h4>
+          </div>
+        </div>
+        <% }) %>
+
+      </div>
+    </section>
+
+    <section class="my-20">
+      <div class="max-w-3xl mx-auto text-center">
+        <h3 class="font-black text-2xl md:text-3xl mb-6">
+          Consortium II
+        </h3>
+
+      </div>
+
+      <div class="px-4 grid grid-cols-3 gap-4 md:max-w-3xl mx-auto pb-16">
+
+        <% consortium2.forEach(c2 => { %>
+        <div class="pb-8">
+          <div>
+            <img src="<%= c2.image %>" width="432" height="285" alt="event image" class="w-full pb-8 rounded-md" />
+          </div>
+
+          <div>
+            <h4 class="font-bold text-sm text-center">
+              <%= c2.name %>
+            </h4>
+          </div>
+        </div>
+        <% }) %>
+
+      </div>
+    </section>
+
+  </main>
+
+  <%- include('../partials/footer') %>
+
+
+</body>
+
+</html>

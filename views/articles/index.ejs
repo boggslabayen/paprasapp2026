@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><%= title %></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+
+</head>
+
+<body>
+
+  <%- include('../partials/header-nav') %>
+
+  <main class="my-8">
+    <div class="max-w-3xl mx-auto text-center mb-8">
+      <h3 class="font-black text-2xl md:text-3xl mb-6">
+        ARTICLES
+      </h3>
+      <p class=text-black text-base md:text-lg leading-relaxed mb-16>
+        Explore expert insights and advancements in aesthetic and
+        reconstructive surgery through our curated articles. Stay inspired and
+        informed with valuable knowledge from PAPRAS professionals.
+      </p>
+    </div>
+
+    <div class="mx-auto max-w-3xl text-center py-12">
+
+      <% articles.forEach(article => { %>
+      <article class="w-full py-8">
+        <a href="/articles/<%= article._id %>" class="block rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div class="flex gap-4 items-center">
+            <div class=" w-1/2">
+              <img src="<%= article.bannerUrl %>" alt="<%= article.title %> banner" class="w-full h-48 object-cover" />
+            </div>
+
+            <div class=" w-1/2 text-left gap-4">
+              <div>
+                <h4 class=" font-bold text-2xl mb-2"><%= article.title %></h4>
+                <p class="text-gray-600 text-sm"><%= new Date(article.createdAt).toLocaleDateString() %></p>
+                <%= article.contentHtml.replace(/<[^>]+>/g, '').substring(0, 100) + '...' %>
+              </div>
+              <div>
+                <button class="my-4 secondary-ctabtn">
+                  Read More
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </a>
+      </article>
+      <% }) %>
+
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+
+
+</body>
+
+</html>

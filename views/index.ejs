@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body>
+
+  <%- include('./partials/header-nav') %>
+  <main>
+
+    <section class="md:flex items-center gap-10 mx-auto place-content-center px-4 py-16 max-w-6xl">
+      <div class="hero-content lg:w-1/2 w-full">
+        <h1 class="hero-banner my-4 text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">The Philippine Association of Plastic Reconstructive and Aesthetic Surgeons</h1>
+        <h3 class="hero-subtitle my-4 text-mdlg:text-xl text-center lg:text-left">The leader in the field of aesthetic and reconstructive surgery in the Philippines</h3>
+
+        <div class="place-self-center lg:place-self-start">
+          <a href="/doctors" class="hero-cta-link">
+            <button class="primary-ctabtn hero-cta">
+              Find a Doctor
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-image w-1/2 hidden lg:block place-items-center">
+        <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/banners/hero-image.png" alt="PAPRAS Hero Image" class="hero-image ">
+      </div>
+
+    </section>
+
+    <section class="">
+      <div class="max-w-3xl mx-auto text-center">
+        <h3 class="font-black text-2xl md:text-3xl mb-6">
+          Patient Education
+        </h3>
+        <p class={`${roboto.class} text-black text-base md:text-lg leading-relaxed mb-8`}>
+          Discover the safe and advanced techniques of reconstructive and
+          aesthetic plastic surgery for enhanced beauty and confidence.
+        </p>
+      </div>
+      <div class="max-w-3xl mx-auto">
+        <div class="grid grid-cols-3 gap-4">
+          <a href="/procedures/aesthetic">
+            <div>
+              <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/banners/aesthetic.webp" alt="aesthetic image" class="w-full pb-4 rounded-md" />
+              <h4 class="text-center font-bold text-lg">
+                Aesthetic
+              </h4>
+            </div>
+          </a>
+
+          <a href="/procedures/reconstructive">
+            <div>
+              <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/banners/reconstructive.webp" alt="aesthetic image" class="w-full pb-4 rounded-md" />
+              <h4 class="text-center font-bold text-lg">
+                Reconstructive
+              </h4>
+            </div>
+          </a>
+
+          <a href="/procedures/aesthetic">
+            <div>
+              <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/banners/non-surgical.webp" alt="aesthetic image" class="w-full pb-4 rounded-md" />
+              <h4 class={`text-center ${manrope.class} font-bold text-lg`}>
+                Non-surgical
+              </h4>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+
+    <section class="my-8 px-8">
+      <div class="flex content-center gap-4 max-w-4xl mx-auto py-8">
+        <div class="w-1/2">
+          <img src="https://paparas-web-2026.sgp1.cdn.digitaloceanspaces.com/banners/AboutImage.webp" alt="about papras image" class="rounded-md pb-8 md:pb-0" />
+        </div>
+        <div class="w-1/2">
+          <p class="font-light text-lg">
+            About PAPRAS
+          </p>
+          <h3 class="font-black text-2xl md:text-3xl mb-4">
+            Pioneering Excellence in Plastic, Reconstructive, and Aesthetic
+            Surgery Since 1961.
+          </h3>
+          <p class={`${roboto.class} text-black text-base md:text-lg leading-relaxed mb-8`}>
+            From training world-class surgeons to serving communities in need,
+            PAPRAS continues its legacy of innovation, education, and
+            compassion.
+          </p>
+          <a href="/about">
+            <button class="primary-ctabtn my-4">
+              Learn More
+            </button>
+          </a>
+        </div>
+      </div>
+    </section>
+
+
+
+    <%- include('./partials/become-member') %>
+
+
+
+  </main>
+
+  <%- include('partials/footer') %>
+
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= article.title %></title>
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body>
+
+  <%- include('../partials/header-nav') %>
+
+
+
+  <article class="mx-auto justify-center items-center px-8 md:px-4 pt-10 max-w-3xl py-12">
+    <div>
+      <img src="<%= article.bannerUrl %>" alt=" <%= article.title %> image" class="w-full pb-4 rounded-md object-cover w-[432px] h-[285px]" />
+    </div>
+
+
+    <div>
+      <h1 class=" font-black text-2xl md:text-3xl mb-4"><%= article.title %></h1>
+      <%- article.contentHtml %>
+    </div>
+
+  </article>
+
+  <%- include('../partials/footer') %>
+</body>
+
+</html>

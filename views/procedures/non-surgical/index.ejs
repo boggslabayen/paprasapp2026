@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+  <%- include('../../partials/header-nav') %>
+
+  <main>
+
+    <section class="my-20">
+      <div class="max-w-3xl mx-auto text-center">
+        <h3 class="font-black text-2xl md:text-3xl mb-6">
+          Non-Surgical Treatments
+        </h3>
+        <p class="text-black text-base md:text-lg leading-relaxed mb-8">
+          PAPRAS encourages learning and growth about the latest advancements in
+          reconstructive and cosmetic plastic surgery procedures
+        </p>
+      </div>
+      <div class="px-4 grid grid-cols-3 gap-4 md:max-w-3xl mx-auto pb-16">
+        <% procedures.forEach(procedure => { %>
+        <a href="/procedures/non-surgical/<%= procedure._id %>">
+          <div>
+            <img src="<%= procedure.bannerUrl %>" alt="<%= procedure.title %> Image" class="w-full pb-4 rounded-md hover:border-2 hover:border-amber-500" width="432" height="432" />
+          </div>
+
+
+          <div>
+            <h4 class="font-bold text-sm md:text-lg text-center">
+              <%= procedure.title %>
+            </h4>
+          </div>
+
+        </a>
+        <% }); %>
+      </div>
+    </section>
+
+
+  </main>
+  <%- include('../../partials/footer') %>
+</body>
+
+</html>
