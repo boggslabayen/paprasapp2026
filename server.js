@@ -37,12 +37,20 @@ dbInit();
 
 
 // Session Middleware Setup
+app.set('trust proxy', 1);
+
 app.use(session({
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}))
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    domain: process.env.COOKIE_DOMAIN || undefined,
+  }
+}));
+
 
 // Middleware to make user data available in all views
 app.use((req,res,next)=> {
