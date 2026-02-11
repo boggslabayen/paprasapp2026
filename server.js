@@ -3,7 +3,7 @@ const express = require('express');
 const {dbInit} = require("./config/db");
 const bcrypt = require("bcrypt");
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 const session = require('express-session');
 // const dotenv = require('dotenv');
@@ -414,6 +414,6 @@ app.post("/dashboard/events/add", authentication, authorization, async (req, res
 
 
 
-app.listen(port, ()=> {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on port ${PORT}`);
 });
