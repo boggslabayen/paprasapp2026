@@ -6,8 +6,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const session = require('express-session');
-const MongoStore = require("connect-mongo");
-
 // const dotenv = require('dotenv');
 
 // Middleware exports
@@ -42,20 +40,14 @@ dbInit();
 app.set('trust proxy', 1);
 
 app.use(session({
-  name: "papras.sid",
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
-  proxy: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.DB_CONNECTION_STRING,
-    collectionName: "sessions",
-    ttl: 60 * 60 * 24 * 7, // 7 days
-  }),
   cookie: {
     httpOnly: true,
-    secure: true,      // App Platform is HTTPS
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    domain: process.env.COOKIE_DOMAIN || undefined,
   }
 }));
 
