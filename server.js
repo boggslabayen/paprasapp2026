@@ -40,14 +40,16 @@ dbInit();
 app.set('trust proxy', 1);
 
 app.use(session({
+  name: 'papras.sid',
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
+  proxy: true,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,      // App Platform is HTTPS
     sameSite: 'lax',
-    domain: process.env.COOKIE_DOMAIN || undefined,
+    // domain: undefined  // <- don’t set this
   }
 }));
 
