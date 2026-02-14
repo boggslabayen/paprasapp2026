@@ -222,28 +222,29 @@ app.get("/dashboard/auth/login", (req,res)=> {
     res.render("dashboard/auth/login",{error: null})
 })
 
-app.post("/dashboard/auth/login", async (req,res)=> {
+app.post("/dashboard/auth/login", async (req, res) => {
+  const user = await userModel.findOne({ email: req.body.email });
+  if (!user) return res.render("dashboard/auth/login", { error: "Invalid email or password" });
 
-   const user = await userModel.findOne({email: req.body.email});
-    if(!user) { 
-       return res.render("dashboard/auth/login", {error: "Invalid email or password" });
-    }
+  const isMatch = await bcrypt.compare(req.body.password, user.password);
+  if (!isMatch) return res.render("dashboard/auth/login", { error: "Invalid email or password" });
 
-    const isMatch = await bcrypt.compare(req.body.password, user.password);
-    if(!isMatch) {
-        return res.render("dashboard/auth/login", {error: "Invalid email or password" });
-    }
+  req.session.regenerate((err) => {
+    if (err) return res.status(500).send("Session error");
 
-    req.session.user ={
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        type:user.type
-    }
+    req.session.user = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      type: user.type
+    };
 
-    console.log("User logged in");
-    res.redirect("/dashboard");
-})
+    req.session.save((err) => {
+      if (err) return res.status(500).send("Session save error");
+      return res.redirect("/dashboard");
+    });
+  });
+});
 
 // Protected dashboard route
 app.get('/dashboard',authentication,authorization, (req, res) => {
