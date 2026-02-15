@@ -92,6 +92,11 @@ app.get('/procedures/reconstructive', async (req, res) => {
 app.get('/procedures/reconstructive/:id', async (req, res) => {
 
     const {id}= req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("Procedure not found");
+  }
+
     const procedure = await procedureModel.findOne({_id:id, category:"Reconstructive"});
     if (!procedure) {
         return res.status(404).send("Procedure not found");
@@ -108,6 +113,11 @@ app.get('/procedures/non-surgical', async (req, res) => {
 app.get('/procedures/non-surgical/:id', async (req, res) => {
 
     const {id}= req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("Procedure not found");
+  }
+
     const procedure = await procedureModel.findOne({_id:id, category:"Non Surgical"});
     if (!procedure) {
         return res.status(404).send("Procedure not found");
@@ -124,6 +134,11 @@ app.get('/procedures/aesthetic', async (req, res) => {
 app.get('/procedures/aesthetic/:id', async (req, res) => {
 
     const {id}= req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("Procedure not found");
+  }
+
     const procedure = await procedureModel.findOne({_id:id, category:"Aesthetic"});
     if (!procedure) {
         return res.status(404).send("Procedure not found");
@@ -173,6 +188,11 @@ app.get("/articles", async (req, res) => {
 app.get('/articles/:id', async (req, res) => {
 
     const {id}= req.params;
+
+     if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("Article not found");
+  }
+
     const article = await articleModel.findOne({_id:id});
     if (!article) {
         return res.status(404).send("Article not found");
@@ -189,6 +209,11 @@ app.get("/events", async (req, res) => {
 app.get('/events/:id', async (req, res) => {
 
     const {id}= req.params;
+
+     if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("Event not found");
+  }
+
     const events = await eventsModel.findOne({_id:id});
     if (!events) {
         return res.status(404).send("event not found");
