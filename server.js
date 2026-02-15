@@ -42,23 +42,21 @@ dbInit();
 // Session Middleware Setup
 app.set('trust proxy', 1);
 
-app.use(session({
-  name: "papras.sid",
-  secret: process.env.SESSION_SECRET_KEY,
-  resave: false,
-  saveUninitialized: false,
-  proxy: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.DB_CONNECTION_STRING,
-    collectionName: "sessions",
-    ttl: 60 * 60 * 24 * 7, // 7 days
-  }),
-  cookie: {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax"
-  }
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.DB_CONNECTION_STRING,
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      sameSite: "lax",
+    },
+  })
+);
 
 
 // Middleware to make user data available in all views
