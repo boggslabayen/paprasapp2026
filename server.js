@@ -6,8 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const session = require('express-session');
-const MongoStore = require("connect-mongo");
-const mongoose = require("mongoose");
+// const MongoStore = require("connect-mongo");
 
 // const dotenv = require('dotenv');
 
@@ -42,21 +41,12 @@ dbInit();
 // Session Middleware Setup
 app.set('trust proxy', 1);
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.DB_CONNECTION_STRING,
-    }),
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      sameSite: "lax",
-    },
-  })
-);
+app.use(session({
+  secret: process.env.SESSION_SECRET_KEY,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}))
 
 
 // Middleware to make user data available in all views
@@ -210,9 +200,9 @@ app.get('/events/:id', async (req, res) => {
     const {id}= req.params;
 
      if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).send("Event not found");
+    return res.status(404).send("Events not found");
   }
-
+  
     const events = await eventsModel.findOne({_id:id});
     if (!events) {
         return res.status(404).send("event not found");
