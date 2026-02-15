@@ -4,6 +4,7 @@ const {dbInit} = require("./config/db");
 const bcrypt = require("bcrypt");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const Mongoose = require("mongoose")
 
 const session = require('express-session');
 // const MongoStore = require("connect-mongo");
