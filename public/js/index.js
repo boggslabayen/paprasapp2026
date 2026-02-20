@@ -113,6 +113,8 @@ function main() {
       "Drawer dropdown not found. Expected .drawer-dropdown-toggle and #drawerPatientEdu"
     );
   }
+
+
 }
 
 document.addEventListener("DOMContentLoaded", main);

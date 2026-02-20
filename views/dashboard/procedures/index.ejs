@@ -5,17 +5,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= title %></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
 </head>
 
-<body>
-  <p>Dashboard / Procedures</p>
-  <h2>Display List Here</h2>
-  <a href="/dashboard/procedures/add"><button>Add Service</button></a>
+<body class=" w-5xl max-w-5xl place-self-center">
 
-  <% procedures.forEach(procedure => { %>
-  <p><%= procedure.title %></p>
-  <img src="<%= procedure.bannerUrl %>" alt="Banner for <%= procedure.title %>" style="max-width: 200px;" />
-  <% }); %>
+  <div class="max-w-full mt-16">
+    <h1 class="text-xl font-black my-8">Procedures</h1>
+    <header class=" bg-gray-100 p-2 rounded-full ">
+      <nav class="">
+        <ul class="flex justify-around">
+          <li class="hover:text-amber-500"><a href="/profile">Profile</a></li>
+          <li class="hover:text-amber-500"><a href="/dashboard/doctors">Doctors</a></li>
+          <li class="hover:text-amber-500"><a href="/dashboard/procedures">Procedures</a></li>
+          <li class="hover:text-amber-500"><a href="/dashboard/articles">Articles</a></li>
+          <li class="hover:text-amber-500"><a href="/dashboard/events">Events</a></li>
+          <li class="hover:text-amber-500"><a href="/settings">Settings</a></li>
+          <li class="hover:text-amber-500"><a href="/logout">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+  </div>
+
+  <div class="flex justify-between py-8 items-center">
+    <p class="text-lg font-bold">Dashboard / Procedures</p>
+    <a href="/dashboard/procedures/add"><button class="primary-ctabtn">Add Procedure</button></a>
+  </div>
+
+  <div>
+    <table class="w-full border border-gray-300 divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <th>Image</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Action</th>
+      </thead>
+
+
+
+      <tbody>
+        <% procedures.forEach(procedure => { %>
+        <tr class="odd:bg-white even:bg-gray-50">
+          <td class="text-center align-middle py-2 place-items-center"><img src="<%= procedure.bannerUrl %>" alt="Banner for <%= procedure.title %>" class="w-16 h-16 " /></td>
+          <td class="text-center align-middle py-2"><%= procedure.title %></td>
+          <td class="text-center align-middle py-2"><%= procedure.category %></td>
+          <td class="text-center align-middle py-2"><a>Edit</a></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 
 
 </body>

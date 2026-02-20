@@ -9,52 +9,72 @@
   <!-- Quill CSS -->
   <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" />
 
+  <!-- Quill JS -->
+  <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js" defer></script>
+  <script src="/js/addService.js" defer></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
   <!-- Page CSS -->
   <link rel="stylesheet" href="/css/addService.css" />
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body>
-  <h1>Create a New Event</h1>
 
-  <form id="postForm" method="POST" action="/dashboard/events/add">
-    <label for="title">Event Title</label>
-    <input id="title" name="title" type="text" placeholder="Post title" required />
+<body class=" w-5xl max-w-5xl place-self-center">
 
-    <label for="eventUrl">Event URL</label>
-    <input id="eventUrl" name="eventUrl" type="text" placeholder="Event URL" />
+  <section class="max-w-full my-16">
+    <h1 class="text-xl font-black my-8">Add Event</h1>
+
+    <form id="postForm" method="POST" action="/dashboard/events/add">
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text" placeholder="Post title" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" required />
 
 
-    <label for="bannerFile">Image banner</label>
+      <label for="bannerFile">Image banner</label>
 
-    <div class="banner-row">
-      <div class="banner-left">
-        <input id="bannerFile" type="file" accept="image/*" />
-        <p class="hint">
-          Uploads to <code>/upload-banner</code> and saves the returned URL.
-        </p>
-        <div id="bannerStatus" class="status"></div>
+      <div class="banner-row">
+        <div class="banner-left">
+          <input id="bannerFile" type="file" accept="image/*" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" />
+          <p class="hint">
+            Uploads to <code>/upload-banner</code> and saves the returned URL.
+          </p>
+          <div id="bannerStatus" class="status"></div>
+        </div>
+
+        <div class="banner-right">
+          <img id="bannerPreview" class="preview" alt="Banner preview" />
+        </div>
       </div>
 
-      <div class="banner-right">
-        <img id="bannerPreview" class="preview" alt="Banner preview" />
+      <input type="hidden" id="bannerUrl" name="bannerUrl" />
+
+      <label>Content</label>
+      <div id="editor"></div>
+
+      <input type="hidden" id="contentHtml" name="contentHtml" />
+
+      <div class="justify-self-end">
+        <a href="/dashboard/events" class="rounded-full p-2 border-1 mx-8 hover:bg-amber-500">
+          ← Back
+        </a>
+        <button id="publishBtn" type="submit" class="primary-ctabtn">Publish</button>
+
       </div>
-    </div>
+    </form>
 
-    <input type="hidden" id="bannerUrl" name="bannerUrl" />
+  </section>
 
-    <label>Content</label>
-    <div id="editor"></div>
 
-    <input type="hidden" id="contentHtml" name="contentHtml" />
 
-    <button id="publishBtn" type="submit">Publish</button>
-  </form>
 
-  <!-- Quill JS -->
-  <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 
-  <!-- Page JS -->
-  <script src="/js/addService.js"></script>
 </body>
 
 </html>

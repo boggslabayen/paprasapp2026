@@ -113,3 +113,11 @@ select {
   border: 1px dashed #ccc;
   border-radius: 12px;
 }
+
+input[type="file"]::file-selector-button {
+  background: black;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+}

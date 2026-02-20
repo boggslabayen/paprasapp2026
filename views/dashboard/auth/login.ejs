@@ -1,33 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-  </head>
-  <body>
-    <section>
-      <form action="/dashboard/auth/login" method="post">
-        <h1>Login</h1>
 
-        <% if(error) { %>
-        <p class="error-alert"><%= error %></p>
-      <%}%>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
 
-        <div>
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
-        </div>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
 
-        <div>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required />
-        </div>
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
 
-        <button type="submit">Login</button>
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body>
+  <section>
+    <div class="bg-gray-50 min-h-screen flex justify-center items-center">
+      <div class="bg-white min-w-lg p-8 rounded-lg border-2 border-amber-500">
+        <form action="/dashboard/auth/login" method="post">
+          <h1 class="text-lg font-black">Login</h1>
+
+
+
+          <div>
+            <label for="email" class="">Email:</label>
+            <input type="email" id="email" name="email" required class="p-2 border-1 border-gray-200 rounded-md min-w-full" />
+          </div>
+
+          <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required class=" p-2 border-1 border-gray-200 rounded-md min-w-full" />
+          </div>
+
+          <% if(error) { %>
+          <p class="error-alert text-red-500"><%= error %></p>
+          <%}%>
+
+        <button type="submit" class="primary-ctabtn mt-8">Login</button>
       </form>
+      </div>
+     </div>
 
-      <a href="/dashboard/auth/register"><p>Not yet a member? Register</p></a>
+      <!-- <a href="/dashboard/auth/register"><p>Not yet a member? Register</p></a> -->
     </section>
   </body>
 </html>

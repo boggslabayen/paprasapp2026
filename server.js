@@ -33,6 +33,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(uploadRoutes);
 
+
 app.set('view engine', 'ejs');
 
 dbInit();
@@ -193,7 +194,7 @@ app.get('/articles/:id', async (req, res) => {
 // Get routes for events
 app.get("/events", async (req, res) => {
     const events = await eventsModel.find({});
-      res.render('events/index', { title: 'Articles', events: events});;
+      res.render('events/index', { title: 'Events', events: events});;
 });
 
 app.get('/events/:id', async (req, res) => {
@@ -396,8 +397,8 @@ app.post("/dashboard/articles/add", authentication, authorization, async (req, r
 
 
 app.get('/dashboard/events',authentication,authorization, async (req, res) => {
-    
-    res.render('dashboard/events/index', { title: 'Dashboard Events'});
+    const events = await eventsModel.find({});
+    res.render('dashboard/events/index', { title: 'Dashboard Events',  events: events});
 });
 
 app.get('/dashboard/events/add',authentication,authorization, async (req, res) => {
