@@ -96,6 +96,8 @@ app.get("/__session_debug", (req, res) => {
 });
 
 
+app.get("/health", (req, res) => res.status(200).send("ok"));
+
 
 
 // Get and post routes for events
