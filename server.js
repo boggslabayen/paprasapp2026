@@ -86,6 +86,15 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'Home Page' });
 });
 
+app.get("/__session_debug", (req, res) => {
+  res.json({
+    sessionID: req.sessionID,
+    hasSession: !!req.session,
+    hasUser: !!req.session?.user,
+    user: req.session?.user || null
+  });
+});
+
 
 
 
