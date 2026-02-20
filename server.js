@@ -57,7 +57,7 @@ app.use(session({
   saveUninitialized: false,
   proxy: true,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
+    mongoUrl: process.env.DB_CONNECTION_STRING,
     ttl: 7 * 24 * 60 * 60
   }),
   cookie: {
