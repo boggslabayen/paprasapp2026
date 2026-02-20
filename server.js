@@ -86,10 +86,21 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'Home Page' });
 });
 
+// This below are debug codes
+
 app.get("/__session_debug", (req, res) => {
   res.json({
     sessionID: req.sessionID,
     hasSession: !!req.session,
+    hasUser: !!req.session?.user,
+    user: req.session?.user || null
+  });
+});
+
+app.get("/dashboard/__debug", (req, res) => {
+  res.json({
+    path: req.path,
+    sessionID: req.sessionID,
     hasUser: !!req.session?.user,
     user: req.session?.user || null
   });
