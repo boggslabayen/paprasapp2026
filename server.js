@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 const mongoose = require("mongoose")
 
 const session = require('express-session');
-// const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo");
 
 // const dotenv = require('dotenv');
 
@@ -43,12 +43,33 @@ dbInit();
 // Session Middleware Setup
 app.set('trust proxy', 1);
 
+// app.use(session({
+//   secret: process.env.SESSION_SECRET_KEY,
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { secure: true }
+// }))
+
 app.use(session({
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
-}))
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,  // same URI you use in dbInit
+    ttl: 14 * 24 * 60 * 60           // 14 days
+  }),
+  cookie: {
+    secure: "auto",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 14 * 24 * 60 * 60 * 1000
+  }
+}));
+
+app.use((req, res, next) => {
+  console.log("req.secure:", req.secure, "x-forwarded-proto:", req.headers["x-forwarded-proto"]);
+  next();
+});
 
 
 // Middleware to make user data available in all views
