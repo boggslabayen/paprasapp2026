@@ -51,18 +51,20 @@ app.set('trust proxy', 1);
 // }))
 
 app.use(session({
+  name: "sid",
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
+  proxy: true,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,  // same URI you use in dbInit
-    ttl: 14 * 24 * 60 * 60           // 14 days
+    mongoUrl: process.env.MONGO_URI,
+    ttl: 7 * 24 * 60 * 60
   }),
   cookie: {
     secure: "auto",
     httpOnly: true,
     sameSite: "lax",
-    maxAge: 14 * 24 * 60 * 60 * 1000
+    maxAge: 7 * 24 * 60 * 60 * 1000
   }
 }));
 
