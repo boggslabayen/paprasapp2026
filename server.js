@@ -62,7 +62,7 @@ app.use(session({
   }),
   cookie: {
     secure: "auto",
-    httpOnly: true,
+    httpOnly: false,
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000
   }
@@ -347,8 +347,8 @@ app.post("/dashboard/doctors/add",validation, async (req,res)=> {
 
 // Dashboard > procedures route
 app.get('/dashboard/procedures',authentication,authorization, async (req, res) => {
-    const proceduresList = await procedureModel.find({});
-    res.render('dashboard/procedures/index', { title: 'Dashboard Procedures', procedures: proceduresList });
+    const procedure = await procedureModel.find({});
+    res.render('dashboard/procedures/index', { title: 'Dashboard Procedures', procedures: procedure });
 });
 
 app.get('/dashboard/procedures/add',authentication,authorization, (req, res) => {
@@ -392,7 +392,74 @@ app.post("/dashboard/procedures/add", authentication, authorization, async (req,
   }
 });
 
+app.get("/dashboard/procedures/:id/edit", authentication, authentication, async(req,res) =>{
+  const id= req.params.id;
+  const procedure = await procedureModel.findOne({_id: id});
+
+  // create 404 page later
+
+  res.render("dashboard/procedures/editProcedure", {procedure})
+});
+
+app.post(
+  "/dashboard/procedures/:id/edit",
+  authentication,
+  authorization,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const title = (req.body.title || "").trim();
+      const category = (req.body.category || "").trim();
+      const bannerUrl = (req.body.bannerUrl || "").trim();
+      const contentHtml = (req.body.contentHtml || "").trim();
+
+      if (!title || !category || !contentHtml) {
+        return res.status(400).send("Missing required fields");
+      }
+
+      const cleanHtml = sanitizeHtml(contentHtml, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+          "h1",
+          "h2",
+          "h3",
+          "img"
+        ]),
+        allowedAttributes: {
+          a: ["href", "target", "rel"],
+          img: ["src", "alt"]
+        }
+      });
+
+      const updatePayload = {
+        title,
+        category,
+        bannerUrl: bannerUrl || null, // allows banner removal
+        contentHtml: cleanHtml,
+        updatedAt: new Date()
+      };
+
+      const updatedProcedure = await procedureModel.findByIdAndUpdate(
+        id,
+        updatePayload,
+        { new: true }
+      );
+
+      if (!updatedProcedure) {
+        return res.status(404).send("Procedure not found");
+      }
+
+      console.log(`Procedure ${updatedProcedure.title} updated`);
+      return res.redirect("/dashboard/procedures");
+    } catch (err) {
+      return res.status(500).send(err.message || "Failed to update procedure");
+    }
+  }
+);
+
+
 // Get and post routes for articles
+
 app.get('/dashboard/articles',authentication,authorization, async (req, res) => {
     const articleList = await articleModel.find({});
     res.render('dashboard/articles/index', { title: 'Dashboard Articles', articles: articleList });
@@ -438,8 +505,69 @@ app.post("/dashboard/articles/add", authentication, authorization, async (req, r
   }
 });
 
-// Get and post routes for events
+app.get("/dashboard/articles/:id/edit", authentication, authentication, async(req,res) =>{
+  const id= req.params.id;
+  const article = await articleModel.findOne({_id: id});
 
+  // create 404 page later
+
+  res.render("dashboard/articles/editArticle", {article})
+});
+
+app.post(
+  "/dashboard/articles/:id/edit",
+  authentication,
+  authorization,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const { title, bannerUrl, contentHtml } = req.body;
+
+      if (!title || !contentHtml) {
+        return res.status(400).send("Missing required fields");
+      }
+
+      const cleanHtml = sanitizeHtml(contentHtml, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+          "h1",
+          "h2",
+          "h3",
+          "img"
+        ]),
+        allowedAttributes: {
+          a: ["href", "target", "rel"],
+          img: ["src", "alt"]
+        }
+      });
+
+      const updatePayload = {
+        title: title.trim(),
+        bannerUrl: bannerUrl?.trim() || null, // allows removing banner
+        contentHtml: cleanHtml,
+        updatedAt: new Date()
+      };
+
+      const updatedArticle = await articleModel.findByIdAndUpdate(
+        id,
+        updatePayload,
+        { new: true } // return updated document
+      );
+
+      if (!updatedArticle) {
+        return res.status(404).send("Article not found");
+      }
+
+      console.log(`Article ${updatedArticle.title} updated`);
+      return res.redirect("/dashboard/articles");
+    } catch (err) {
+      return res.status(500).send(err.message || "Failed to update article");
+    }
+  }
+);
+
+
+// Get and post routes for events
 
 app.get('/dashboard/events',authentication,authorization, async (req, res) => {
     const events = await eventsModel.find({});
@@ -488,8 +616,88 @@ app.post("/dashboard/events/add", authentication, authorization, async (req, res
   }
 });
 
+app.get("/dashboard/events/:id/edit", authentication, authentication, async(req,res) =>{
+  const id= req.params.id;
+  const events = await eventsModel.findOne({_id: id});
 
+  // create 404 page later
 
+  res.render("dashboard/events/editEvent", {events})
+});
+
+app.post(
+  "/dashboard/events/:id/edit",
+  authentication,
+  authorization,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const { title, bannerUrl, contentHtml } = req.body;
+
+      if (!title || !contentHtml) {
+        return res.status(400).send("Missing required fields");
+      }
+
+      const cleanHtml = sanitizeHtml(contentHtml, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+          "h1",
+          "h2",
+          "h3",
+          "img"
+        ]),
+        allowedAttributes: {
+          a: ["href", "target", "rel"],
+          img: ["src", "alt"]
+        }
+      });
+
+      const updatePayload = {
+        title: title.trim(),
+        bannerUrl: bannerUrl?.trim() || null, // allows removing banner
+        contentHtml: cleanHtml,
+        updatedAt: new Date()
+      };
+
+      const updatedEvent = await eventsModel.findByIdAndUpdate(
+        id,
+        updatePayload,
+        { new: true } // return updated document
+      );
+
+      if (!updatedEvent) {
+        return res.status(404).send("Event not found");
+      }
+
+      console.log(`Event ${updatedEvent.title} updated`);
+      return res.redirect("/dashboard/events");
+    } catch (err) {
+      return res.status(500).send(err.message || "Failed to update event");
+    }
+  }
+);
+
+// Logout
+app.post("/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send("Unable to log out");
+        }
+
+        // Clear the session cookie
+        res.clearCookie("connect.sid"); 
+
+        res.redirect("/login"); 
+    });
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(500).send("Unable to log out");
+    res.clearCookie("connect.sid");
+    return res.redirect("/dashboard/auth/login");
+  });
+});
 
 
 app.listen(PORT, "0.0.0.0", () => {

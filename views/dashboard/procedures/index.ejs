@@ -59,7 +59,7 @@
           <td class="text-center align-middle py-2 place-items-center"><img src="<%= procedure.bannerUrl %>" alt="Banner for <%= procedure.title %>" class="w-16 h-16 " /></td>
           <td class="text-center align-middle py-2"><%= procedure.title %></td>
           <td class="text-center align-middle py-2"><%= procedure.category %></td>
-          <td class="text-center align-middle py-2"><a>Edit</a></td>
+          <td class="text-center align-middle py-2"><a href="/dashboard/procedures/<%= procedure._id %>/edit">Edit</a></td>
         </tr>
         <% }) %>
       </tbody>

@@ -59,7 +59,7 @@
         <tr class="odd:bg-white even:bg-gray-50">
           <td class="text-center align-middle py-2 place-items-center"><img src="<%= event.bannerUrl %>" alt="Banner for <%= event.title %>" class="w-16 h-16 " /></td>
           <td class="text-center align-middle py-2"><%= event.title %></td>
-          <td class="text-center align-middle py-2"><a>Edit</a></td>
+          <td class="text-center align-middle py-2"><a href="/dashboard/events/<%= event._id %>/edit">Edit</a></td>
         </tr>
         <% }) %>
       </tbody>

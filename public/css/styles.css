@@ -44,6 +44,7 @@ button {
 
 .secondary-ctabtn {
   font-family: "Google Sans", sans-serif;
+  text-align: center;
   font-weight: 500;
   border: #000000 solid 2px;
   background-color: #f4bf0000;

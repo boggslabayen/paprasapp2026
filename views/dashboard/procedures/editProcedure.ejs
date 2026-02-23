@@ -30,25 +30,33 @@
 <body class=" w-5xl max-w-5xl place-self-center">
 
   <section class="max-w-full my-16">
-    <h1 class="text-xl font-black my-8">Add Procedure</h1>
+    <h1 class="text-xl font-black my-8">Edit Procedure</h1>
 
-    <form id="postForm" method="POST" action="/dashboard/procedures/add">
+    <!-- ✅ edit route -->
+    <form id="postForm" method="POST" action="/dashboard/procedures/<%= procedure._id %>/edit">
       <label for="title">Title</label>
-      <input id="title" name="title" type="text" placeholder="Post title" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" required />
+      <input id="title" name="title" type="text" value="<%= procedure.title || '' %>" class="p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" required />
 
       <label for="category">Category</label>
-      <select id="category" name="category" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" required>
-        <option value="" disabled selected>Select a category</option>
-        <option value="Aesthetic">Aesthetic</option>
-        <option value="Reconstructive">Reconstructive</option>
-        <option value="Non Surgical">Non Surgical</option>
+      <select id="category" name="category" class="p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" required>
+        <option value="" disabled>Select a category</option>
+
+        <option value="Aesthetic" <%= procedure.category === 'Aesthetic' ? 'selected' : '' %>>
+          Aesthetic
+        </option>
+        <option value="Reconstructive" <%= procedure.category === 'Reconstructive' ? 'selected' : '' %>>
+          Reconstructive
+        </option>
+        <option value="Non Surgical" <%= procedure.category === 'Non Surgical' ? 'selected' : '' %>>
+          Non Surgical
+        </option>
       </select>
 
       <label for="bannerFile">Image banner</label>
 
       <div class="banner-row">
         <div class="banner-left">
-          <input id="bannerFile" type="file" accept="image/*" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" />
+          <input id="bannerFile" type="file" accept="image/*" class="p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" />
           <p class="hint">
             Uploads to <code>/upload-banner</code> and saves the returned URL.
           </p>
@@ -56,42 +64,36 @@
         </div>
 
         <div class="banner-right">
-          <img id="bannerPreview" class="preview" alt="Banner preview" />
+          <!-- JS will use bannerUrl to show preview on load -->
+          <img id="bannerPreview" class="preview" alt="Banner preview" style="display:none;" />
 
-          <!-- feb22 added remove banner button -->
-          <button type="button" id="removeBannerBtn" class="secondary-ctabtn w-full text-center">
+          <button type="button" id="removeBannerBtn" class="secondary-ctabtn w-full text-center" style="display:none;">
             Remove banner
           </button>
         </div>
       </div>
 
-
-
-      <input type="hidden" id="bannerUrl" name="bannerUrl" />
-
-
+      <!-- ✅ preload existing banner url -->
+      <input type="hidden" id="bannerUrl" name="bannerUrl" value="<%= procedure.bannerUrl || '' %>" />
 
       <label>Content</label>
       <div id="editor"></div>
 
       <input type="hidden" id="contentHtml" name="contentHtml" />
 
-
+      <!-- ✅ safe way to preload Quill HTML (avoid putting HTML in an input value) -->
+      <div id="contentHtmlInitial" style="display:none;">
+        <%- procedure.contentHtml || '' %>
+      </div>
 
       <div class="justify-self-end">
         <a href="/dashboard/procedures" class="rounded-full p-2 border-1 mx-8 hover:bg-amber-500">
           ← Back
         </a>
-        <button id="publishBtn" type="submit" class="primary-ctabtn">Publish</button>
-
+        <button id="publishBtn" type="submit" class="primary-ctabtn">Update</button>
       </div>
     </form>
-
   </section>
-
-
-
-
 
 </body>
 
