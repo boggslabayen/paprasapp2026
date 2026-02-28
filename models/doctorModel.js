@@ -6,7 +6,10 @@ const {Schema} = mongoose;
 const doctorSchema = new Schema({
     firstName: String,
     lastName: String,
-    location: String
+    doctor_type: String,
+    region: String,
+    province: String,
+    city: String
    
 },{ timestamps: true });
 

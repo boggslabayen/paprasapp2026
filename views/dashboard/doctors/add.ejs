@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
+  <title>Add Doctor</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,29 +17,62 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 
+
 </head>
 
 <body class=" w-5xl max-w-5xl place-self-center">
+
+
   <section class="max-w-full mt-16">
     <h1 class="text-xl font-black my-8">Add Doctor</h1>
 
     <form action="/dashboard/doctors/add" method="post" class="bg-gray-100 p-8 border-2 border-gray-200 rounded-xl">
 
-
+      <!-- First Name -->
       <div>
         <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" />
+        <input type="text" id="firstName" name="firstName" class=" p-2 mt-4 border-1 border-gray-200 rounded-md min-w-full bg-white" />
       </div>
 
-      <div>
+      <!-- Last Name -->
+      <div class="my-8">
         <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" />
+        <input type="text" id="lastName" name="lastName" class=" p-2 mt-4 border-1 border-gray-200 rounded-md min-w-full bg-white" />
       </div>
 
-      <div>
-        <label for="City">City:</label>
-        <input type="text" id="city" name="city" class=" p-2 border-1 border-gray-200 rounded-md min-w-full bg-white" />
+
+      <div class="my-8">
+        <label for="doctor_type">Type:</label>
+        <select id="doctor_type" name="doctor_type" class=" p-4 mt-4 border-1 border-gray-200 rounded-md min-w-full bg-white">
+          <option value="board-eligible">Board Eligible</option>
+          <option value="licensed-surgeon">Licensed Plastic Surgeons</option>
+        </select>
       </div>
+
+      <div class="flex gap-2 my-8 place-items-center">
+        <label>Location:</label>
+
+        <select id="region" name="region_code" class="p-4 border-1 border-gray-200 rounded-md min-w-64 bg-white">
+          <option value="">Select region</option>
+        </select>
+
+        <select id="province" name="province_code" class="p-4 border-1 border-gray-200 rounded-md min-w-64 bg-white" disabled>
+          <option value="">Select province</option>
+        </select>
+
+        <select id="cityMunicipality" name="city_municipality_code" class="p-4 border-1 border-gray-200 rounded-md min-w-64 bg-white" disabled>
+          <option value="">Select city/municipality</option>
+        </select>
+
+        <!-- Hidden fields to store names -->
+        <input type="hidden" name="region_name" id="region_name">
+        <input type="hidden" name="province_name" id="province_name">
+        <input type="hidden" name="city_municipality_name" id="city_municipality_name">
+      </div>
+
+
+      <script src="/js/psgc.js"></script>
+
       <div class="justify-self-end">
         <a href="/dashboard/doctors" class="rounded-full p-2 border-1 mx-8 hover:bg-amber-500">
           ← Back
@@ -53,6 +86,8 @@
 
     </form>
   </section>
+
+  <script src="/js/locationDropdown.js"></script>
 </body>
 
 </html>

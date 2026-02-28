@@ -86,59 +86,72 @@
     </div>
   </section>
 
-
-  <div class=" max-w-4xl mx-auto py-8">
+  <div class="max-w-4xl mx-auto py-8">
 
     <h2 class="font-bold text-2xl">Our Fellows</h2>
 
+    <!-- Doctor Type Tabs -->
+    <div class="flex gap-6 my-4">
+      <a href="/doctors?doctor_type=licensed-surgeon<%= selectedRegion ? `&region=${encodeURIComponent(selectedRegion)}` : '' %>" class="<%= selectedType === 'licensed-surgeon' ? 'font-bold underline' : '' %>">
+        Licensed Surgeons
+      </a>
+
+      <a href="/doctors?doctor_type=board-eligible<%= selectedRegion ? `&region=${encodeURIComponent(selectedRegion)}` : '' %>" class="<%= selectedType === 'board-eligible' ? 'font-bold underline' : '' %>">
+        Board Eligible
+      </a>
+    </div>
+
+    <!-- Region Filter -->
     <form class="bar" method="GET" action="/doctors">
-      <label for="location">Filter by location:</label>
 
-      <select id="location" name="location" onchange="this.form.submit()">
-        <option value="">All locations</option>
+      <!-- Preserve doctor_type when region changes -->
+      <input type="hidden" name="doctor_type" value="<%= selectedType %>">
 
-        <% locations.forEach(loc => { %>
-        <option value="<%= loc %>" <%= (selectedLocation === loc ? "selected" : "") %>>
-          <%= loc %>
+      <label for="region">Filter by region:</label>
+
+      <select id="region" name="region" onchange="this.form.submit()" class=" p-4 border-1 border-gray-200 rounded-md min-w-64 bg-white">
+        <option value="">All regions</option>
+
+        <% regions.forEach(r => { %>
+        <option value="<%= r %>" <%= selectedRegion === r ? "selected" : "" %>>
+          <%= r %>
         </option>
         <% }) %>
       </select>
 
-      <% if (selectedLocation) { %>
-      <a href="/doctors">Clear</a>
+      <% if (selectedRegion) { %>
+      <a href="/doctors?doctor_type=<%= selectedType %>">Clear</a>
       <% } %>
     </form>
 
-
     <% if (!doctors || doctors.length === 0) { %>
-    <div class="empty">No doctors found for this location.</div>
+    <div class="empty">
+      No doctors found
+      <% if (selectedRegion) { %> for <%= selectedRegion %><% } %>.
+    </div>
     <% } else { %>
     <div class="grid">
       <% doctors.forEach(d => { %>
       <div class="card">
         <div class="name">
-          Dr. <%= 
-  (d.firstName + " " + d.lastName)
-    .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase())
-%>
+          Dr.
+          <%= (d.firstName + " " + d.lastName)
+                  .toLowerCase()
+                  .replace(/\b\w/g, c => c.toUpperCase())
+            %>
         </div>
+
+
 
         <div class="muted">
-          Location: <%= d.location || "—" %>
+          Location:<br />
+          <%= d.city || "—" %><% if (d.province) { %>, <%= d.province %><% } %>
         </div>
-
-        <% if (d.specialty) { %>
-        <div class="muted">Specialty: <%= d.specialty %></div>
-        <% } %>
-
-        <% if (d.email) { %>
-        <div class="muted">Email: <%= d.email %></div>
-        <% } %>
       </div>
       <% }) %>
     </div>
     <% } %>
+
   </div>
 
   <%- include('../partials/become-member') %>

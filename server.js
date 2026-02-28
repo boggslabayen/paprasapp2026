@@ -24,7 +24,8 @@ const sanitizeHtml  = require("sanitize-html");
 const uploadRoutes = require("./routes/uploadRoutes");
 
 const { programs,consortium1, consortium2 } =require( "./data/programs.js")
-const { board } =require( "./data/bod.js")
+const { board } =require( "./data/bod.js");
+const { Session } = require("express-session");
 
 
 
@@ -33,6 +34,13 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(uploadRoutes);
 
+const locationsRoutes = require("./routes/locations");
+app.use("/api/locations", locationsRoutes);
+
+app.use((req, res, next) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  next();
+});
 
 app.set('view engine', 'ejs');
 
@@ -43,30 +51,34 @@ dbInit();
 // Session Middleware Setup
 app.set('trust proxy', 1);
 
-// app.use(session({
-//   secret: process.env.SESSION_SECRET_KEY,
-//   resave: false,
-//   saveUninitialized: true,
-//   cookie: { secure: true }
-// }))
 
 app.use(session({
   name: "sid",
   secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: false,
-  proxy: true,
+  // proxy: true, // uncomment in prod
   store: MongoStore.create({
     mongoUrl: process.env.DB_CONNECTION_STRING,
     ttl: 7 * 24 * 60 * 60
   }),
   cookie: {
-    secure: "auto",
-    httpOnly: false,
+    path: "/",
+    secure: false, // change to true in prod
+    httpOnly: true, // change this to true in prod
     sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000
   }
 }));
+
+app.use((req, res, next) => {
+  console.log("REQ", req.method, req.path, {
+    sessionID: req.sessionID,
+    hasUser: !!req.session?.user,
+    cookieHeader: req.headers.cookie
+  });
+  next();
+});
 
 app.use((req, res, next) => {
   console.log("req.secure:", req.secure, "x-forwarded-proto:", req.headers["x-forwarded-proto"]);
@@ -183,32 +195,104 @@ app.get('/procedures/aesthetic/:id', async (req, res) => {
 });
 
 // Get routes for doctors
+
+
+// app.get("/doctors", async (req, res) => {
+//   try {
+//     const selectedRegion = (req.query.region || "").trim();
+
+//     const filter = {};
+//     if (selectedRegion) {
+//       filter.region = selectedRegion; // you said you store regionName string
+//     }
+
+//     const doctors = await doctorModel
+//       .find(filter)
+//       .sort({ lastName: 1, firstName: 1 });
+
+//     // Regions for the dropdown
+//     const regions = (await doctorModel.distinct("region"))
+//       .filter(Boolean)
+//       .sort();
+
+//     // When region selected, show all provinces + cities that exist in that region
+//     let provinces = [];
+//     let cities = [];
+
+//     if (selectedRegion) {
+//       provinces = (await doctorModel.distinct("province", { regionName: selectedRegion }))
+//         .filter(Boolean)
+//         .sort();
+
+//       cities = (await doctorModel.distinct("city", { regionName: selectedRegion }))
+//         .filter(Boolean)
+//         .sort();
+//     }
+
+//     res.render("find-doctors/index", {
+//       title: "Doctors",
+//       doctors,
+//       regions,
+//       selectedRegion,
+//       provinces,
+//       cities
+//     });
+//   } catch (err) {
+//     res.status(500).send(err.message || "Failed to load doctors");
+//   }
+// });
+
 app.get("/doctors", async (req, res) => {
   try {
-    const selectedLocation = (req.query.location || "").trim();
+    const selectedRegion = (req.query.region || "").trim();
+    const selectedType = (req.query.doctor_type || "licensed-surgeon").trim(); 
+    // examples: "Licensed Surgeon", "Board Eligible"
 
-    // Build filter object only if a location is provided
     const filter = {};
-    if (selectedLocation) {
-      // exact match (simple)
-      filter.location = selectedLocation;
-
-      // If you want case-insensitive match instead, use:
-      // filter.location = { $regex: `^${selectedLocation}$`, $options: "i" };
-    }
+    if (selectedRegion) filter.region = selectedRegion;
+    if (selectedType) filter.doctor_type = selectedType;
 
     const doctors = await doctorModel
       .find(filter)
       .sort({ lastName: 1, firstName: 1 });
 
-    // Build a unique list of locations for the dropdown
-    const locations = await doctorModel.distinct("location");
+    // Regions dropdown (can be global; not dependent on type)
+    const regions = (await doctorModel.distinct("region"))
+      .filter(Boolean)
+      .sort();
+
+    // Types for tabs/dropdown
+    const doctorTypes = (await doctorModel.distinct("doctor_type"))
+      .filter(Boolean)
+      .sort();
+
+    // When region selected (and optionally type selected), show provinces + cities in that scope
+    let provinces = [];
+    let cities = [];
+
+    if (selectedRegion || selectedType) {
+      const scopeFilter = {};
+      if (selectedRegion) scopeFilter.region = selectedRegion;
+      if (selectedType) scopeFilter.doctor_type = selectedType;
+
+      provinces = (await doctorModel.distinct("province", scopeFilter))
+        .filter(Boolean)
+        .sort();
+
+      cities = (await doctorModel.distinct("city", scopeFilter))
+        .filter(Boolean)
+        .sort();
+    }
 
     res.render("find-doctors/index", {
+      title: "Doctors",
       doctors,
-      locations: locations.filter(Boolean).sort(),
-      selectedLocation,
-      title: "Doctors"
+      regions,
+      doctorTypes,
+      selectedRegion,
+      selectedType,
+      provinces,
+      cities
     });
   } catch (err) {
     res.status(500).send(err.message || "Failed to load doctors");
@@ -292,44 +376,60 @@ app.get("/dashboard/auth/login", (req,res)=> {
 })
 
 app.post("/dashboard/auth/login", async (req, res) => {
-  const user = await userModel.findOne({ email: req.body.email });
-  if (!user) return res.render("dashboard/auth/login", { error: "Invalid email or password" });
+  try {
+    const { email, password } = req.body;
 
-  const isMatch = await bcrypt.compare(req.body.password, user.password);
-  if (!isMatch) return res.render("dashboard/auth/login", { error: "Invalid email or password" });
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.render("dashboard/auth/login", { error: "Invalid email or password" });
+    }
 
-  req.session.regenerate((err) => {
-    if (err) return res.status(500).send("Session error");
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.render("dashboard/auth/login", { error: "Invalid email or password" });
+    }
 
-    req.session.user = {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      type: user.type
-    };
+    // Prevent session fixation
+    req.session.regenerate((err) => {
+      if (err) return res.status(500).send("Session error");
 
-    req.session.save((err) => {
-      if (err) return res.status(500).send("Session save error");
-      return res.redirect("/dashboard");
+      req.session.user = {
+        _id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        type: user.type
+      };
+
+      req.session.save((err) => {
+        if (err) return res.status(500).send("Session save error");
+        return res.redirect("/dashboard");
+      });
     });
-  });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Server error");
+  }
 });
 
 // Protected dashboard route
-app.get('/dashboard',authentication,authorization, (req, res) => {
+app.get('/dashboard',authentication, (req, res) => {
+   console.log("SESSION:", req.session);
+   console.log("dashboard sessionID:", req.sessionID, "user:", req.session?.user);
+
     res.render('dashboard/index', { title: 'Dashboard' });
 });
 
 // Dashboard > doctors route
-app.get('/dashboard/doctors',authentication,authorization, async(req, res) => {
+app.get('/dashboard/doctors',authentication, async(req, res) => {
     const doctorsList = await doctorModel.find({});
 
     res.render('dashboard/doctors/index', { title: 'Dashboard Doctors', doctors: doctorsList });
 });
 
 // Dashboard > doctors > get and post route
-app.get('/dashboard/doctors/add',authentication,authorization, (req, res) => {
-
+app.get('/dashboard/doctors/add',authentication, (req, res) => {
+    res.set("Content-Type", "text/html; charset=utf-8");
     res.render('dashboard/doctors/add', { title: 'Add Doctor' });
 });
 
@@ -338,24 +438,78 @@ app.post("/dashboard/doctors/add",validation, async (req,res)=> {
     const doctor = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        location: req.body.city
+        doctor_type: req.body.doctor_type,
+        region: req.body.region_name,
+        province: req.body.province_name,
+        city: req.body.city_municipality_name,
     }
     await doctorModel.create(doctor);
-    console.log(`Doctor ${doctor.firstName} ${doctor.lastName} added`);
+    console.log(`Doctor ${doctor.firstName} ${doctor.lastName} ${doctor.region} ${doctor.province} ${doctor.city} added`);
     res.redirect("/dashboard/doctors");
 })
 
+app.get("/dashboard/doctors/:id/delete", authentication, async(req,res)=> {
+const id= req.params.id;
+  const doctor = await doctorModel.findOne({_id: id});
+
+  // create 404 page later
+
+  res.render("dashboard/doctors/deleteDoctor", {doctor})
+});
+
+app.post("/dashboard/doctors/:id/delete", authentication, async(req,res)=> {
+  const id=req.params.id;
+    await doctorModel.findOneAndDelete({_id:id});
+    return res.redirect("/dashboard/doctors")
+});
+
+app.get("/dashboard/doctors/:id/edit", authentication, async(req,res) =>{
+  const id= req.params.id;
+  const doctor = await doctorModel.findOne({_id: id});
+
+  // create 404 page later
+
+  res.render("dashboard/doctors/edit", {doctor})
+});
+
+app.post("/dashboard/doctors/:id/edit", validation, async (req, res) => {
+  try {
+    const updatedDoctor = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      doctor_type: req.body.doctor_type,
+      region: req.body.region_name,
+      province: req.body.province_name,
+      city: req.body.city_municipality_name,
+    };
+
+    await doctorModel.findByIdAndUpdate(
+      req.params.id,
+      updatedDoctor,
+      { new: true } // optional but good practice
+    );
+
+    console.log(
+      `Doctor ${updatedDoctor.firstName} ${updatedDoctor.lastName} updated`
+    );
+
+    res.redirect("/dashboard/doctors");
+  } catch (err) {
+    res.status(500).send("Failed to update doctor");
+  }
+});
+
 // Dashboard > procedures route
-app.get('/dashboard/procedures',authentication,authorization, async (req, res) => {
+app.get('/dashboard/procedures',authentication, async (req, res) => {
     const procedure = await procedureModel.find({});
     res.render('dashboard/procedures/index', { title: 'Dashboard Procedures', procedures: procedure });
 });
 
-app.get('/dashboard/procedures/add',authentication,authorization, (req, res) => {
+app.get('/dashboard/procedures/add',authentication, (req, res) => {
     res.render('dashboard/procedures/add', { title: 'Add Procedures' });
 });
 
-app.post("/dashboard/procedures/add", authentication, authorization, async (req, res) => {
+app.post("/dashboard/procedures/add", authentication, async (req, res) => {
   try {
     const procedure = {
       title: req.body.title,
@@ -392,7 +546,7 @@ app.post("/dashboard/procedures/add", authentication, authorization, async (req,
   }
 });
 
-app.get("/dashboard/procedures/:id/edit", authentication, authentication, async(req,res) =>{
+app.get("/dashboard/procedures/:id/edit", authentication, async(req,res) =>{
   const id= req.params.id;
   const procedure = await procedureModel.findOne({_id: id});
 
@@ -401,11 +555,7 @@ app.get("/dashboard/procedures/:id/edit", authentication, authentication, async(
   res.render("dashboard/procedures/editProcedure", {procedure})
 });
 
-app.post(
-  "/dashboard/procedures/:id/edit",
-  authentication,
-  authorization,
-  async (req, res) => {
+app.post("/dashboard/procedures/:id/edit",authentication,async (req, res) => {
     try {
       const { id } = req.params;
 
@@ -454,22 +604,37 @@ app.post(
     } catch (err) {
       return res.status(500).send(err.message || "Failed to update procedure");
     }
+  });
+
+app.get("/dashboard/procedures/:id/delete", authentication, async(req,res) =>{
+  const id= req.params.id;
+  const procedure = await procedureModel.findOne({_id: id});
+
+  // create 404 page later
+
+  res.render("dashboard/procedures/deleteProcedures", {procedure})
+});
+
+app.post("/dashboard/procedures/:id/delete", authentication, authorization, async (req, res) => {
+    const id=req.params.id;
+    await procedureModel.findOneAndDelete({_id:id});
+    return res.redirect("/dashboard/procedures")
   }
 );
 
 
 // Get and post routes for articles
 
-app.get('/dashboard/articles',authentication,authorization, async (req, res) => {
+app.get('/dashboard/articles',authentication, async (req, res) => {
     const articleList = await articleModel.find({});
     res.render('dashboard/articles/index', { title: 'Dashboard Articles', articles: articleList });
 });
 
-app.get('/dashboard/articles/add',authentication,authorization, (req, res) => {
+app.get('/dashboard/articles/add',authentication, (req, res) => {
     res.render('dashboard/articles/add', { title: 'Add Articles' });
 });
 
-app.post("/dashboard/articles/add", authentication, authorization, async (req, res) => {
+app.post("/dashboard/articles/add", authentication, async (req, res) => {
   try {
     const article = {
       title: req.body.title,
@@ -505,7 +670,7 @@ app.post("/dashboard/articles/add", authentication, authorization, async (req, r
   }
 });
 
-app.get("/dashboard/articles/:id/edit", authentication, authentication, async(req,res) =>{
+app.get("/dashboard/articles/:id/edit", authentication, async(req,res) =>{
   const id= req.params.id;
   const article = await articleModel.findOne({_id: id});
 
@@ -517,7 +682,6 @@ app.get("/dashboard/articles/:id/edit", authentication, authentication, async(re
 app.post(
   "/dashboard/articles/:id/edit",
   authentication,
-  authorization,
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -566,20 +730,40 @@ app.post(
   }
 );
 
+app.get("/dashboard/articles/:id/delete", authentication, async(req,res) =>{
+  const id= req.params.id;
+  const article = await articleModel.findOne({_id: id});
+
+  // create 404 page later
+
+  res.render("dashboard/articles/deleteArticles", {article})
+});
+
+app.post(
+  "/dashboard/articles/:id/delete",
+  authentication,
+  authorization,
+  async (req, res) => {
+    const id=req.params.id;
+    await articleModel.findOneAndDelete({_id:id});
+    return res.redirect("/dashboard/articles")
+  }
+);
+
 
 // Get and post routes for events
 
-app.get('/dashboard/events',authentication,authorization, async (req, res) => {
+app.get('/dashboard/events',authentication, async (req, res) => {
     const events = await eventsModel.find({});
     res.render('dashboard/events/index', { title: 'Dashboard Events',  events: events});
 });
 
-app.get('/dashboard/events/add',authentication,authorization, async (req, res) => {
+app.get('/dashboard/events/add',authentication, async (req, res) => {
     
     res.render('dashboard/events/add', { title: 'Add Events'});
 });
 
-app.post("/dashboard/events/add", authentication, authorization, async (req, res) => {
+app.post("/dashboard/events/add", authentication, async (req, res) => {
   try {
     const events = {
       title: req.body.title,
@@ -616,7 +800,7 @@ app.post("/dashboard/events/add", authentication, authorization, async (req, res
   }
 });
 
-app.get("/dashboard/events/:id/edit", authentication, authentication, async(req,res) =>{
+app.get("/dashboard/events/:id/edit", authentication, async(req,res) =>{
   const id= req.params.id;
   const events = await eventsModel.findOne({_id: id});
 
@@ -677,27 +861,130 @@ app.post(
   }
 );
 
-// Logout
-app.post("/auth/logout", (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).send("Unable to log out");
-        }
+app.get("/dashboard/events/:id/delete", authentication, async(req,res) =>{
+  const id= req.params.id;
+  const events = await eventsModel.findOne({_id: id});
 
-        // Clear the session cookie
-        res.clearCookie("connect.sid"); 
+  // create 404 page later
 
-        res.redirect("/login"); 
-    });
+  res.render("dashboard/events/deleteEvent", {events})
 });
 
-app.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) return res.status(500).send("Unable to log out");
-    res.clearCookie("connect.sid");
-    return res.redirect("/dashboard/auth/login");
+app.post(
+  "/dashboard/events/:id/delete",
+  authentication,
+  authorization,
+  async (req, res) => {
+    const id=req.params.id;
+    await eventsModel.findOneAndDelete({_id:id});
+    return res.redirect("/dashboard/events")
+  }
+);
+
+
+
+// settings
+app.get("/dashboard/settings", authentication, async(req,res)=>{
+  const users = await userModel.find({});
+
+  res.render("dashboard/settings/index", {title: 'Settings', users: users})
+});
+
+app.get("/dashboard/settings/add", authentication, authorization, async(req,res)=>{
+  res.render("dashboard/settings/add", {title: 'Add User'})
+});
+
+app.post("/dashboard/settings/add",validation, authentication, authorization, async (req,res)=> {
+    
+    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+
+    const user = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        password: hashedPassword,
+        type: req.body.type,
+    }
+    
+    await userModel.create(user);
+    console.log("user created");
+    res.redirect("/dashboard/settings");
+})
+
+//   const id= req.params.id;
+//   const users = await userModel.findOne({_id: id});
+//   console.log(id)
+
+//   // create 404 page later
+
+//   res.render("dashboard/settings/updatePassword", {
+//     users
+//   })
+// });
+
+app.post(
+  "/dashboard/settings/:id/update",
+  validation,
+  authentication,
+  async (req, res) => {
+    try {
+      const hashedPassword = await bcrypt.hash(req.body.password, 12);
+
+      await userModel.findByIdAndUpdate(
+        req.params.id,
+        { password: hashedPassword },
+        { new: true }
+      );
+
+      console.log("Password updated");
+      return res.redirect("/dashboard/settings");
+
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send("Error updating password");
+    }
+  }
+);
+
+// session user passwordUpdate
+app.get("/dashboard/settings/:id/update", authentication, async (req, res) => {
+  const sessionUser = req.session.user;
+  const requestedId = req.params.id;
+
+  // Non-admin can only update themselves
+  if (sessionUser.type !== "admin" &&
+      requestedId !== sessionUser._id.toString()) {
+    return res.status(403).send("Unauthorized");
+  }
+
+  const user = await userModel.findById(requestedId);
+
+  if (!user) return res.status(404).send("User not found");
+
+  res.render("dashboard/settings/updatePassword", {
+    user,
+    currentUser: sessionUser
   });
 });
+
+
+// Logout
+app.post("/auth/logout", (req, res) => {
+  const sid = req.sessionID;
+
+  req.sessionStore.destroy(sid, (err) => {
+    if (err) return res.status(500).send("Unable to log out");
+
+    res.clearCookie("sid", {
+      path: "/",
+      secure: false,
+      sameSite: "lax"
+    });
+
+    return res.redirect("/dashboard");
+  });
+});
+
 
 
 app.listen(PORT, "0.0.0.0", () => {

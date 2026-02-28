@@ -18,51 +18,60 @@
 
 </head>
 
-<body class=" w-5xl max-w-5xl place-self-center">
+<body>
 
-  <div class="max-w-full mt-16">
-    <h1 class="text-xl font-black my-8">Doctors</h1>
-    <header class=" bg-gray-100 p-2 rounded-full ">
-      <nav class="">
-        <ul class="flex justify-around">
-          <li class="hover:text-amber-500"><a href="/profile">Profile</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/doctors">Doctors</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/procedures">Procedures</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/articles">Articles</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/events">Events</a></li>
-          <li class="hover:text-amber-500"><a href="/settings">Settings</a></li>
-          <li class="hover:text-amber-500"><a href="/logout">Logout</a></li>
-        </ul>
-      </nav>
-    </header>
-  </div>
+  <%- include("../partials/dashboardheader.ejs") %>
 
-  <div class="flex justify-between py-8 items-center">
-    <p class="text-lg font-bold">Dashboard / Doctors</p>
 
-    <a href="/dashboard/doctors/add"><button class="primary-ctabtn">Add Doctor</button></a>
-  </div>
-
-  <div>
-    <table class="w-full border border-gray-300 divide-y divide-gray-200">
-      <thead class="bg-gray-100">
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Location</th>
-      </thead>
+  <div class=" w-5xl max-w-5xl place-self-center">
 
 
 
-      <tbody>
-        <% doctors.forEach(doctor => { %>
-        <tr class="odd:bg-white even:bg-gray-50">
-          <td class="text-center align-middle py-2"><%= doctor.firstName %></td>
-          <td class="text-center align-middle py-2"><%= doctor.lastName %></td>
-          <td class="text-center align-middle py-2"><%= doctor.location %></td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
+    <div class="flex justify-between py-8 items-center">
+      <p class="text-lg font-bold">Dashboard / Doctors</p>
+
+      <a href="/dashboard/doctors/add"><button class="primary-ctabtn">Add Doctor</button></a>
+    </div>
+
+    <div>
+      <table class="w-full border border-gray-300 divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Region</th>
+          <th>Province</th>
+          <th>City</th>
+          <th>Action</th>
+        </thead>
+
+
+
+        <tbody>
+          <% doctors.forEach(doctor => { %>
+          <tr class="odd:bg-white even:bg-gray-50">
+            <td class="text-center align-middle py-2"><%= doctor.firstName %></td>
+            <td class="text-center align-middle py-2"><%= doctor.lastName %></td>
+            <td class="text-center align-middle py-2"><%= doctor.region %></td>
+            <td class="text-center align-middle py-2"><%= doctor.province %></td>
+            <td class="text-center align-middle py-2"><%= doctor.city %></td>
+
+            <td class="text-center py-2">
+
+              <a href="/dashboard/doctors/<%= doctor._id %>/edit" class="mr-4 text-blue-600">
+                Edit
+              </a>
+
+              <a href="/dashboard/doctors/<%= doctor._id %>/delete" class="mr-4 text-red-600 delete-btn">
+                Delete
+              </a>
+
+            </td>
+
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 

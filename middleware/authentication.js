@@ -1,7 +1,7 @@
 function authentication(req,res,next){
-     if(!req.session.user){
-        return res.redirect("/dashboard/auth/login")
-    }
+     if (!req.session || !req.session.user) {
+    return res.redirect("/dashboard/auth/login"); // or whatever your login GET route is
+  }
     next()
 }
 

@@ -17,27 +17,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body class=" w-5xl max-w-5xl place-self-center">
-  <div class="max-w-full mt-16">
-    <h1 class="text-xl font-black my-8">Admin Dashboard</h1>
-    <header class=" bg-gray-100 p-2 rounded-full ">
-      <nav class="">
-        <ul class="flex justify-around">
-          <li class="hover:text-amber-500"><a href="/profile">Profile</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/doctors">Doctors</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/procedures">Procedures</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/articles">Articles</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/events">Events</a></li>
-          <li class="hover:text-amber-500"><a href="/settings">Settings</a></li>
-          <li class="hover:text-amber-500">
-            <form action="/auth/logout" method="post">
-              <a href="/dashboard/auth/login">Logout</a>
-            </form>
-          </li>
-        </ul>
-      </nav>
-    </header>
-  </div>
+<body>
+
+  <%- include("partials/dashboardheader.ejs") %>
+
+
+
+
 </body>
 
 </html>

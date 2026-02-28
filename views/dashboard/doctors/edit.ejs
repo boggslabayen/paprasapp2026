@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Doctor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+  <!-- Css here -->
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <script type="module" src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+
+
+</head>
+
+<body class=" w-5xl max-w-5xl place-self-center">
+
+
+  <section class="max-w-full mt-16">
+    <h1 class="text-xl font-black my-8">Edit Doctor</h1>
+
+    <!-- IMPORTANT: point to your edit route -->
+    <form action="/dashboard/doctors/<%= doctor._id %>/edit" method="post" class="bg-gray-100 p-8 border-2 border-gray-200 rounded-xl">
+
+      <!-- First Name -->
+      <div>
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" class="p-2 mt-4 border-1 border-gray-200 rounded-md min-w-full bg-white" value="<%= doctor.firstName || '' %>" required />
+      </div>
+
+      <!-- Last Name -->
+      <div class="my-8">
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" class="p-2 mt-4 border-1 border-gray-200 rounded-md min-w-full bg-white" value="<%= doctor.lastName || '' %>" required />
+      </div>
+
+      <!-- Doctor Type -->
+      <div class="my-8">
+        <label for="doctor_type">Type:</label>
+        <select id="doctor_type" name="doctor_type" class="p-4 mt-4 border-1 border-gray-200 rounded-md min-w-full bg-white" required>
+          <option value="licensed-surgeon" <%= doctor.doctor_type === 'licensed-surgeon' ? 'selected' : '' %>>
+            Licensed Surgeons
+          </option>
+          <option value="board-eligible" <%= doctor.doctor_type === 'board-eligible' ? 'selected' : '' %>>
+            Board-eligible
+          </option>
+        </select>
+      </div>
+
+      <!-- Location (You store NAMES, so we display existing names above the selects) -->
+
+      <div class="flex gap-2 my-6 place-items-center flex-wrap">
+        <label>Location:</label>
+
+        <select id="region" class="p-4 border-1 border-gray-200 rounded-md min-w-64 bg-white">
+          <option value="">Select region</option>
+        </select>
+
+        <select id="province" class="p-4 border-1 border-gray-200 rounded-md min-w-64 bg-white" disabled>
+          <option value="">Select province</option>
+        </select>
+
+        <select id="cityMunicipality" class="p-4 border-1 border-gray-200 rounded-md min-w-64 bg-white" disabled>
+          <option value="">Select city/municipality</option>
+        </select>
+
+        <!-- Hidden fields that your backend will actually save (names only) -->
+        <input type="hidden" name="region_name" id="region_name" value="<%= doctor.region || '' %>">
+        <input type="hidden" name="province_name" id="province_name" value="<%= doctor.province || '' %>">
+        <input type="hidden" name="city_municipality_name" id="city_municipality_name" value="<%= doctor.city || '' %>">
+      </div>
+
+      <div class="justify-self-end mt-8">
+        <a href="/dashboard/doctors" class="rounded-full p-2 border-1 mx-8 hover:bg-amber-500">
+          ← Back
+        </a>
+        <button type="submit" class="primary-ctabtn mt-4">Save changes</button>
+      </div>
+    </form>
+  </section>
+
+  <script src="/js/locationDropdown.js"></script>
+
+
+</body>
+
+</html>

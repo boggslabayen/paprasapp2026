@@ -15,57 +15,63 @@
 
   <script type="module" src="/js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- <script src="/js/deleteModal.js" defer></script> -->
 
 </head>
 
 
 
-<body class=" w-5xl max-w-5xl place-self-center">
+<body>
 
-  <div class="max-w-full mt-16">
-    <h1 class="text-xl font-black my-8">Events</h1>
-    <header class=" bg-gray-100 p-2 rounded-full ">
-      <nav class="">
-        <ul class="flex justify-around">
-          <li class="hover:text-amber-500"><a href="/profile">Profile</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/doctors">Doctors</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/procedures">Procedures</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/articles">Articles</a></li>
-          <li class="hover:text-amber-500"><a href="/dashboard/events">Events</a></li>
-          <li class="hover:text-amber-500"><a href="/settings">Settings</a></li>
-          <li class="hover:text-amber-500"><a href="/logout">Logout</a></li>
-        </ul>
-      </nav>
-    </header>
-  </div>
+  <%- include("../partials/dashboardheader.ejs") %>
 
-  <div class="flex justify-between py-8 items-center">
-    <p class="text-lg font-bold">Dashboard / Events</p>
-    <a href="/dashboard/events/add"><button class="primary-ctabtn">Add Events</button></a>
-  </div>
+  <div class=" w-5xl max-w-5xl place-self-center">
 
-  <div>
-    <table class="w-full border border-gray-300 divide-y divide-gray-200">
-      <thead class="bg-gray-100">
-        <th>Image</th>
-        <th>Title</th>
-        <th>Action</th>
-      </thead>
+
+    <div class="flex justify-between py-8 items-center">
+      <p class="text-lg font-bold">Dashboard / Events</p>
+      <a href="/dashboard/events/add"><button class="primary-ctabtn">Add Events</button></a>
+    </div>
+
+    <div>
+      <table class="w-full border border-gray-300 divide-y divide-gray-200">
+        <thead class="bg-gray-100">
+          <th>Image</th>
+          <th>Title</th>
+          <th>Action</th>
+        </thead>
 
 
 
-      <tbody>
-        <% events.forEach(event => { %>
-        <tr class="odd:bg-white even:bg-gray-50">
-          <td class="text-center align-middle py-2 place-items-center"><img src="<%= event.bannerUrl %>" alt="Banner for <%= event.title %>" class="w-16 h-16 " /></td>
-          <td class="text-center align-middle py-2"><%= event.title %></td>
-          <td class="text-center align-middle py-2"><a href="/dashboard/events/<%= event._id %>/edit">Edit</a></td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+        <tbody>
+          <% events.forEach(event => { %>
+          <tr class="odd:bg-white even:bg-gray-50">
 
+            <td class="text-center py-2">
+              <img src="<%= event.bannerUrl %>" alt="Banner for <%= event.title %>" class="w-16 h-16" />
+            </td>
+
+            <td class="text-center py-2">
+              <%= event.title %>
+            </td>
+
+            <td class="text-center py-2">
+
+              <a href="/dashboard/events/<%= event._id %>/edit" class="mr-4 text-blue-600">
+                Edit
+              </a>
+
+              <a href="/dashboard/events/<%= event._id %>/delete" class="mr-4 text-red-600 delete-btn">
+                Delete
+              </a>
+
+
+
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
 
 </body>
 
