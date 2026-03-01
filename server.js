@@ -421,10 +421,59 @@ app.get('/dashboard',authentication, (req, res) => {
 });
 
 // Dashboard > doctors route
-app.get('/dashboard/doctors',authentication, async(req, res) => {
-    const doctorsList = await doctorModel.find({});
+app.get("/dashboard/doctors", authentication, async (req, res) => {
+  try {
+    const selectedRegion = (req.query.region || "").trim();
+    const selectedType = (req.query.doctor_type || "licensed-surgeon").trim();
+    const search = (req.query.search || "").trim();
 
-    res.render('dashboard/doctors/index', { title: 'Dashboard Doctors', doctors: doctorsList });
+    const filter = {
+      doctor_type: selectedType
+    };
+
+    if (selectedRegion) {
+      filter.region = selectedRegion;
+    }
+
+    // Search filter
+    if (search) {
+      const regex = new RegExp(search, "i"); // case-insensitive
+      filter.$or = [
+        { firstName: regex },
+        { lastName: regex },
+        {
+          $expr: {
+            $regexMatch: {
+              input: { $concat: ["$firstName", " ", "$lastName"] },
+              regex: search,
+              options: "i"
+            }
+          }
+        }
+      ];
+    }
+
+    const doctors = await doctorModel
+      .find(filter)
+      .sort({ lastName: 1, firstName: 1 });
+
+    const regions = (await doctorModel.distinct("region"))
+      .filter(Boolean)
+      .sort();
+
+    res.render("dashboard/doctors/index", {
+      title: "Dashboard Doctors",
+      doctors,
+      regions,
+      selectedRegion,
+      selectedType,
+      search
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to load dashboard doctors");
+  }
 });
 
 // Dashboard > doctors > get and post route

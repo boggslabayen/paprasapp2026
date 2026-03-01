@@ -10,71 +10,119 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
 
-  <!-- Css here -->
   <link rel="stylesheet" href="/css/styles.css" />
-
   <script type="module" src="/js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
 </head>
 
 <body>
 
   <%- include("../partials/dashboardheader.ejs") %>
 
-
-  <div class=" w-5xl max-w-5xl place-self-center">
-
-
+  <div class="w-5xl max-w-5xl place-self-center">
 
     <div class="flex justify-between py-8 items-center">
       <p class="text-lg font-bold">Dashboard / Doctors</p>
-
       <a href="/dashboard/doctors/add"><button class="primary-ctabtn">Add Doctor</button></a>
     </div>
 
+    <!-- Tabs + Region filter -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-200 p-4 rounded-md">
+
+      <!-- Doctor Type Tabs -->
+      <div class="flex gap-6">
+        <a href="/dashboard/doctors?doctor_type=licensed-surgeon<%= selectedRegion ? `&region=${encodeURIComponent(selectedRegion)}` : '' %>" class="<%= selectedType === 'licensed-surgeon' ? 'font-bold text-[#ffffff] py-2 px-4 rounded-full bg-[#1E3A5F] text-sm place-self-center' : 'py-2 px-4 rounded-full border-2 text-sm' %>">
+          Licensed Surgeons
+        </a>
+
+        <a href="/dashboard/doctors?doctor_type=board-eligible<%= selectedRegion ? `&region=${encodeURIComponent(selectedRegion)}` : '' %>" class="<%= selectedType === 'board-eligible' ? 'font-bold text-[#ffffff] py-2 px-4 rounded-full bg-[#1E3A5F] text-sm place-self-center' : 'py-2 px-4 rounded-full border-2 text-sm'%>">
+          Board-eligible
+        </a>
+      </div>
+
+      <!-- Region Filter -->
+      <form method="GET" action="/dashboard/doctors" class="flex items-center gap-3">
+        <!-- preserve active tab -->
+        <input type="hidden" name="doctor_type" value="<%= selectedType %>">
+
+        <label for="region" class="text-sm">Region:</label>
+        <select id="region" name="region" class="p-2 border border-gray-200 rounded-md bg-white" onchange="this.form.submit()">
+          <option value="">All regions</option>
+          <% regions.forEach(r => { %>
+          <option value="<%= r %>" <%= selectedRegion === r ? "selected" : "" %>>
+            <%= r %>
+          </option>
+          <% }) %>
+        </select>
+
+        <% if (selectedRegion) { %>
+        <a class="text-sm underline" href="/dashboard/doctors?doctor_type=<%= selectedType %>">
+          Clear
+        </a>
+        <% } %>
+      </form>
+      <div class="min-w-full">
+        <form method="GET" action="/dashboard/doctors" class=" items-center gap-3">
+
+          <!-- Preserve tab + region -->
+          <input type="hidden" name="doctor_type" value="<%= selectedType %>">
+          <input type="hidden" name="region" value="<%= selectedRegion %>">
+
+          <input type="text" name="search" placeholder="Search by first or last name..." value="<%= search || '' %>" class="p-2 border border-gray-300 rounded-md w-64 bg-white min-w-full" />
+
+          <div class="place-self-end my-4">
+            <button type="submit" class="primary-ctabtn">Search</button>
+          </div>
+          <% if (search) { %>
+          <a href="/dashboard/doctors?doctor_type=<%= selectedType %><%= selectedRegion ? `&region=${encodeURIComponent(selectedRegion)}` : '' %>" class="text-sm underline">
+            Clear
+          </a>
+          <% } %>
+
+        </form>
+      </div>
+
+    </div>
+
     <div>
+
+
       <table class="w-full border border-gray-300 divide-y divide-gray-200">
-        <thead class="bg-gray-100">
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Region</th>
-          <th>Province</th>
-          <th>City</th>
-          <th>Action</th>
+        <thead class="bg-gray-100 px-2">
+          <th class="text-sm">First Name</th>
+          <th class="text-sm">Last Name</th>
+          <th class="text-sm">Region</th>
+          <th class="text-sm">Province</th>
+          <th class="text-sm">City</th>
+          <th class="text-sm">Action</th>
         </thead>
-
-
 
         <tbody>
           <% doctors.forEach(doctor => { %>
           <tr class="odd:bg-white even:bg-gray-50">
-            <td class="text-center align-middle py-2"><%= doctor.firstName %></td>
-            <td class="text-center align-middle py-2"><%= doctor.lastName %></td>
-            <td class="text-center align-middle py-2"><%= doctor.region %></td>
-            <td class="text-center align-middle py-2"><%= doctor.province %></td>
-            <td class="text-center align-middle py-2"><%= doctor.city %></td>
+            <td class="text-center align-middle py-2 text-sm"><%= doctor.firstName %></td>
+            <td class="text-center align-middle py-2 text-sm"><%= doctor.lastName %></td>
+            <td class="text-center align-middle py-2 text-sm"><%= doctor.region %></td>
+            <td class="text-center align-middle py-2 text-sm"><%= doctor.province %></td>
+            <td class="text-center align-middle py-2 text-sm"><%= doctor.city %></td>
 
             <td class="text-center py-2">
-
-              <a href="/dashboard/doctors/<%= doctor._id %>/edit" class="mr-4 text-blue-600">
-                Edit
-              </a>
-
-              <a href="/dashboard/doctors/<%= doctor._id %>/delete" class="mr-4 text-red-600 delete-btn">
-                Delete
-              </a>
-
+              <a href="/dashboard/doctors/<%= doctor._id %>/edit" class="mr-4 text-blue-600">Edit</a>
+              <a href="/dashboard/doctors/<%= doctor._id %>/delete" class="mr-4 text-red-600 delete-btn">Delete</a>
             </td>
-
           </tr>
           <% }) %>
         </tbody>
       </table>
+
+      <% if (!doctors || doctors.length === 0) { %>
+      <div class="mt-6 text-center text-gray-600">
+        No doctors found for this filter.
+      </div>
+      <% } %>
     </div>
+
   </div>
-
-
 </body>
 
 </html>
