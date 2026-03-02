@@ -19,7 +19,7 @@
 
   <%- include("../partials/dashboardheader.ejs") %>
 
-  <div class="w-5xl max-w-5xl place-self-center">
+  <div class="w-5xl max-w-5xl place-self-center mb-8">
 
     <div class="flex justify-between py-8 items-center">
       <p class="text-lg font-bold">Dashboard / Doctors</p>
@@ -87,7 +87,7 @@
     <div>
 
 
-      <table class="w-full border border-gray-300 divide-y divide-gray-200">
+      <table id="doctorsTable" class="w-full border border-gray-300 divide-y divide-gray-200">
         <thead class="bg-gray-100 px-2">
           <th class="text-sm">First Name</th>
           <th class="text-sm">Last Name</th>
@@ -97,7 +97,7 @@
           <th class="text-sm">Action</th>
         </thead>
 
-        <tbody>
+        <tbody id="doctorsTbody">
           <% doctors.forEach(doctor => { %>
           <tr class="odd:bg-white even:bg-gray-50">
             <td class="text-center align-middle py-2 text-sm"><%= doctor.firstName %></td>
@@ -115,6 +115,27 @@
         </tbody>
       </table>
 
+      <!-- Pagination UI -->
+      <div id="doctorsPagination" class="flex flex-wrap items-center justify-between gap-3 mt-4">
+        <div class="text-sm text-gray-600">
+          Showing <span id="pgFrom">0</span>-<span id="pgTo">0</span> of <span id="pgTotal">0</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-600">Rows:</label>
+          <select id="pgPageSize" class="p-2 border border-gray-200 rounded-md bg-white">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+
+          <button id="pgPrev" class="py-2 px-3 rounded-md border text-sm disabled:opacity-50">Prev</button>
+          <div id="pgNumbers" class="flex items-center gap-1"></div>
+          <button id="pgNext" class="py-2 px-3 rounded-md border text-sm disabled:opacity-50">Next</button>
+        </div>
+      </div>
+
       <% if (!doctors || doctors.length === 0) { %>
       <div class="mt-6 text-center text-gray-600">
         No doctors found for this filter.
@@ -123,6 +144,147 @@
     </div>
 
   </div>
+
+
+  <script>
+    (function() {
+      const tbody = document.getElementById("doctorsTbody");
+      const pagination = document.getElementById("doctorsPagination");
+
+      // If there is no table body or no rows, hide pagination
+      if (!tbody) return;
+
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const total = rows.length;
+
+      const pgFrom = document.getElementById("pgFrom");
+      const pgTo = document.getElementById("pgTo");
+      const pgTotal = document.getElementById("pgTotal");
+      const pgPrev = document.getElementById("pgPrev");
+      const pgNext = document.getElementById("pgNext");
+      const pgNumbers = document.getElementById("pgNumbers");
+      const pgPageSize = document.getElementById("pgPageSize");
+
+      if (!pagination || !pgFrom || !pgTo || !pgTotal || !pgPrev || !pgNext || !pgNumbers || !pgPageSize) return;
+
+      if (total === 0) {
+        pagination.classList.add("hidden");
+        return;
+      }
+
+      pgTotal.textContent = String(total);
+
+      let pageSize = parseInt(pgPageSize.value, 10) || 25;
+      let currentPage = 1;
+
+      function clamp(n, min, max) {
+        return Math.max(min, Math.min(max, n));
+      }
+
+      function getTotalPages() {
+        return Math.max(1, Math.ceil(total / pageSize));
+      }
+
+      function renderPage() {
+        const totalPages = getTotalPages();
+        currentPage = clamp(currentPage, 1, totalPages);
+
+        const startIdx = (currentPage - 1) * pageSize;
+        const endIdxExclusive = Math.min(startIdx + pageSize, total);
+
+        // Show/hide rows
+        rows.forEach((tr, i) => {
+          tr.style.display = (i >= startIdx && i < endIdxExclusive) ? "" : "none";
+        });
+
+        // Update counters
+        pgFrom.textContent = String(total === 0 ? 0 : startIdx + 1);
+        pgTo.textContent = String(endIdxExclusive);
+
+        // Prev/Next buttons
+        pgPrev.disabled = currentPage === 1;
+        pgNext.disabled = currentPage === totalPages;
+
+        renderNumbers(totalPages);
+      }
+
+      function renderNumbers(totalPages) {
+        pgNumbers.innerHTML = "";
+
+        // Keep it compact: show up to 7 page buttons around current
+        const maxButtons = 7;
+        let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+        let end = start + maxButtons - 1;
+
+        if (end > totalPages) {
+          end = totalPages;
+          start = Math.max(1, end - maxButtons + 1);
+        }
+
+        function makeBtn(label, page, isActive = false, isDisabled = false) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = label;
+          btn.disabled = isDisabled;
+          btn.className =
+            "py-2 px-3 rounded-md border text-sm " +
+            (isActive ? "bg-[#1E3A5F] text-white border-[#1E3A5F]" : "bg-white") +
+            (isDisabled ? " opacity-50" : "");
+          btn.addEventListener("click", () => {
+            currentPage = page;
+            renderPage();
+          });
+          return btn;
+        }
+
+        // Optional jump to first
+        if (start > 1) {
+          pgNumbers.appendChild(makeBtn("1", 1, currentPage === 1));
+          if (start > 2) {
+            const dots = document.createElement("span");
+            dots.textContent = "…";
+            dots.className = "px-1 text-gray-500";
+            pgNumbers.appendChild(dots);
+          }
+        }
+
+        for (let p = start; p <= end; p++) {
+          pgNumbers.appendChild(makeBtn(String(p), p, p === currentPage));
+        }
+
+        // Optional jump to last
+        if (end < totalPages) {
+          if (end < totalPages - 1) {
+            const dots = document.createElement("span");
+            dots.textContent = "…";
+            dots.className = "px-1 text-gray-500";
+            pgNumbers.appendChild(dots);
+          }
+          pgNumbers.appendChild(makeBtn(String(totalPages), totalPages, currentPage === totalPages));
+        }
+      }
+
+      // Events
+      pgPrev.addEventListener("click", () => {
+        currentPage -= 1;
+        renderPage();
+      });
+
+      pgNext.addEventListener("click", () => {
+        currentPage += 1;
+        renderPage();
+      });
+
+      pgPageSize.addEventListener("change", () => {
+        pageSize = parseInt(pgPageSize.value, 10) || 25;
+        currentPage = 1;
+        renderPage();
+      });
+
+      // Initial render
+      renderPage();
+    })();
+  </script>
 </body>
 
 </html>
