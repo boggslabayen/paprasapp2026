@@ -413,12 +413,43 @@ app.post("/dashboard/auth/login", async (req, res) => {
 });
 
 // Protected dashboard route
-app.get('/dashboard',authentication, (req, res) => {
+app.get('/dashboard',authentication, async(req, res) => {
    console.log("SESSION:", req.session);
    console.log("dashboard sessionID:", req.sessionID, "user:", req.session?.user);
 
-    res.render('dashboard/index', { title: 'Dashboard' });
+
+    const doctorCount = await doctorModel.countDocuments({});
+    const doctorLicensed = await doctorModel.countDocuments({doctor_type: "licensed-surgeon"});
+    const doctorEligible = await doctorModel.countDocuments({doctor_type: "board-eligible"});
+
+    const proceduresCount = await procedureModel.countDocuments({});
+    const reconstrcutiveCount = await procedureModel.countDocuments({category: "Reconstructive"});
+    const aestheticCount = await procedureModel.countDocuments({category: "Aesthetic"});
+    const nonsurgicalCount = await procedureModel.countDocuments({category: "Non Surgical"});
+
+    const articleCount = await articleModel.countDocuments({});
+
+    const eventsCount = await eventsModel.countDocuments({});
+    const usersCount = await userModel.countDocuments({});
+    const adminCount = await userModel.countDocuments({type: "admin"});
+    const editorCount = await userModel.countDocuments({type: "editor"});
+
+    res.render('dashboard/index', { title: 'Dashboard',
+      doctorCount,
+      doctorLicensed,
+      doctorEligible,
+      proceduresCount,
+      reconstrcutiveCount,
+      aestheticCount,
+      nonsurgicalCount,
+      articleCount,
+      eventsCount,
+      usersCount,
+      adminCount,
+      editorCount
+     });
 });
+
 
 // Dashboard > doctors route
 app.get("/dashboard/doctors", authentication, async (req, res) => {

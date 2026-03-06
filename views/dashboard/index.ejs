@@ -20,6 +20,148 @@
 <body>
 
   <%- include("partials/dashboardheader.ejs") %>
+  <div class="w-5xl max-w-5xl place-self-center grid grid-cols-2 gap-6 py-8">
+
+    <!-- Box 1 -->
+    <div class="border-2 rounded-md p-4">
+      <div class="flex justify-between items-center pb-8">
+        <h3 class="text-2xl font-bold">Doctors</h3>
+        <a href="/dashboard/doctors" class="secondary-ctabtn px-4 py-2 rounded-full">
+          View All
+        </a>
+      </div>
+
+      <div class="">
+        <div class="text-center">
+          <h3 class="text-5xl font-bold"><%= doctorCount %></h3>
+          <p># of Doctors</p>
+        </div>
+
+        <div class="pt-4">
+          <div class="flex justify-between">
+            <p class="text-md">Licensed Doctors:</p>
+            <p class="font-bold pl-4"><%= doctorEligible %></p>
+          </div>
+
+          <div class="flex justify-between">
+            <p class="text-md">Board Eligible:</p>
+            <p class="font-bold pl-4"><%= doctorEligible %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 2 -->
+    <div class="border-2 rounded-md p-4">
+
+      <div class="flex justify-between items-center pb-8">
+        <h3 class="text-2xl font-bold">Procedures</h3>
+        <a href="/dashboard/procedures" class="secondary-ctabtn px-4 py-2 rounded-full">
+          View All
+        </a>
+      </div>
+
+      <div class="">
+        <div class="text-center">
+          <h3 class="text-5xl font-bold"><%= proceduresCount %></h3>
+          <p># of Procedures</p>
+        </div>
+
+        <div class="pt-4">
+          <div class="flex justify-between">
+            <p class="text-md">Aesthetic</p>
+            <p class="font-bold pl-4"><%= aestheticCount %></p>
+          </div>
+
+          <div class="flex justify-between">
+            <p class="text-md">Non-Surgical</p>
+            <p class="font-bold pl-10"><%= nonsurgicalCount %></p>
+          </div>
+
+          <div class="flex justify-between">
+            <p class="text-md">Reconstructive</p>
+            <p class="font-bold pl-10"><%= reconstrcutiveCount %></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Box 3 -->
+    <div class="border-2 rounded-md p-4">
+      <div class="flex justify-between items-center pb-8">
+        <h3 class="text-2xl font-bold">Articles</h3>
+        <a href="/dashboard/articles" class="secondary-ctabtn px-4 py-2 rounded-full">
+          View All
+        </a>
+      </div>
+
+      <div class="">
+        <div class="text-center">
+          <h3 class="text-5xl font-bold"><%= articleCount %></h3>
+          <p># of Articles</p>
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- Box 4 -->
+    <div class="border-2 rounded-md p-4">
+      <div class="flex justify-between items-center pb-8">
+        <h3 class="text-2xl font-bold">Events</h3>
+        <a href="/dashboard/events" class="secondary-ctabtn px-4 py-2 rounded-full">
+          View All
+        </a>
+      </div>
+
+      <div class="">
+        <div class="text-center">
+          <h3 class="text-5xl font-bold"><%= eventsCount %></h3>
+          <p># of Events</p>
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- Box 5 -->
+    <div class="border-2 rounded-md p-4">
+      <div class="flex justify-between items-center pb-8">
+        <h3 class="text-2xl font-bold">Users</h3>
+        <a href="/dashboard/settings" class="secondary-ctabtn px-4 py-2 rounded-full">
+          View All
+        </a>
+      </div>
+
+      <div class="">
+        <div class="text-center">
+          <h3 class="text-5xl font-bold"><%= usersCount %></h3>
+          <p># of Events</p>
+        </div>
+
+        <div class="">
+
+
+          <div class="pt-4">
+            <div class="flex justify-between">
+              <p class="text-md">Admin</p>
+              <p class="font-bold pl-4"><%= adminCount %></p>
+            </div>
+
+            <div class="flex justify-between">
+              <p class="text-md">Editor</p>
+              <p class="font-bold pl-10"><%= editorCount %></p>
+            </div>
+
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+  </div>
 
 
 
