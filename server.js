@@ -32,15 +32,9 @@ const { Session } = require("express-session");
 app.use(express.static('public'));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-app.use(uploadRoutes);
 
 const locationsRoutes = require("./routes/locations");
 app.use("/api/locations", locationsRoutes);
-
-app.use((req, res, next) => {
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  next();
-});
 
 app.set('view engine', 'ejs');
 
@@ -70,6 +64,13 @@ app.use(session({
     maxAge: 7 * 24 * 60 * 60 * 1000
   }
 }));
+
+app.use(uploadRoutes);
+
+app.use((req, res, next) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  next();
+});
 
 app.use((req, res, next) => {
   console.log("REQ", req.method, req.path, {
@@ -605,8 +606,11 @@ app.post("/dashboard/procedures/add", authentication, async (req, res) => {
     const cleanHtml = sanitizeHtml(procedure.contentHtml, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(["h1", "h2", "h3", "img"]),
       allowedAttributes: {
-        a: ["href", "target", "rel"],
+        a: ["href", "target", "rel", "class"],
         img: ["src", "alt"]
+      },
+      allowedClasses: {
+        a: ["content-button"]
       }
     });
 
@@ -656,8 +660,11 @@ app.post("/dashboard/procedures/:id/edit",authentication,async (req, res) => {
           "img"
         ]),
         allowedAttributes: {
-          a: ["href", "target", "rel"],
+          a: ["href", "target", "rel", "class"],
           img: ["src", "alt"]
+        },
+        allowedClasses: {
+          a: ["content-button"]
         }
       });
 
@@ -729,8 +736,11 @@ app.post("/dashboard/articles/add", authentication, async (req, res) => {
     const cleanHtml = sanitizeHtml(article.contentHtml, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(["h1", "h2", "h3", "img"]),
       allowedAttributes: {
-        a: ["href", "target", "rel"],
+        a: ["href", "target", "rel", "class"],
         img: ["src", "alt"]
+      },
+      allowedClasses: {
+        a: ["content-button"]
       }
     });
 
@@ -780,8 +790,11 @@ app.post(
           "img"
         ]),
         allowedAttributes: {
-          a: ["href", "target", "rel"],
+          a: ["href", "target", "rel", "class"],
           img: ["src", "alt"]
+        },
+        allowedClasses: {
+          a: ["content-button"]
         }
       });
 
@@ -859,8 +872,11 @@ app.post("/dashboard/events/add", authentication, async (req, res) => {
     const cleanHtml = sanitizeHtml(events.contentHtml, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(["h1", "h2", "h3", "img"]),
       allowedAttributes: {
-        a: ["href", "target", "rel"],
+        a: ["href", "target", "rel", "class"],
         img: ["src", "alt"]
+      },
+      allowedClasses: {
+        a: ["content-button"]
       }
     });
 
@@ -911,8 +927,11 @@ app.post(
           "img"
         ]),
         allowedAttributes: {
-          a: ["href", "target", "rel"],
+          a: ["href", "target", "rel", "class"],
           img: ["src", "alt"]
+        },
+        allowedClasses: {
+          a: ["content-button"]
         }
       });
 

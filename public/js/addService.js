@@ -1,20 +1,50 @@
+const Link = Quill.import("formats/link");
+
+class ContentButtonLink extends Link {
+  static create(value) {
+    const href = typeof value === "string" ? value : value.href;
+    const node = super.create(href);
+    node.setAttribute("href", href);
+    node.setAttribute("target", "_blank");
+    node.setAttribute("rel", "noopener noreferrer");
+    node.classList.add("content-button");
+    return node;
+  }
+
+  static formats(domNode) {
+    return domNode.getAttribute("href");
+  }
+}
+
+ContentButtonLink.blotName = "contentButton";
+ContentButtonLink.tagName = "a";
+ContentButtonLink.className = "content-button";
+
+Quill.register(ContentButtonLink);
 
 const quill = new Quill("#editor", {
   theme: "snow",
   placeholder: "Write your post here...",
   modules: {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["blockquote", "code-block"],
-      ["link", "image"],
-      ["clean"]
-    ]
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["blockquote", "code-block"],
+        ["link", "image", "contentButton"],
+        ["clean"]
+      ],
+      handlers: {
+        image: handleEditorImageUpload,
+        contentButton: handleEditorButtonInsert
+      }
+    }
   }
 });
 
 const postForm = document.getElementById("postForm");
+const editorElement = document.getElementById("editor");
 const bannerFile = document.getElementById("bannerFile");
 const bannerUrlInput = document.getElementById("bannerUrl");
 const bannerStatus = document.getElementById("bannerStatus");
@@ -22,11 +52,13 @@ const bannerPreview = document.getElementById("bannerPreview");
 const publishBtn = document.getElementById("publishBtn");
 const contentHtmlInput = document.getElementById("contentHtml");
 const removeBannerBtn = document.getElementById("removeBannerBtn");
+const contentButtonToolbarBtn = document.querySelector(".ql-contentButton");
 
 // Optional (edit screen preload)
 const contentHtmlInitial = document.getElementById("contentHtmlInitial");
 
 let isUploadingBanner = false;
+let isUploadingEditorImage = false;
 let currentPreviewObjectUrl = null;
 
 function setStatus(msg, type) {
@@ -37,14 +69,58 @@ function setStatus(msg, type) {
   if (type === "ok") bannerStatus.classList.add("ok");
 }
 
+function createEditorStatus() {
+  if (!editorElement) return null;
+
+  const status = document.createElement("div");
+  status.id = "editorStatus";
+  status.className = "status editor-status";
+  editorElement.insertAdjacentElement("afterend", status);
+  return status;
+}
+
+const editorStatus = createEditorStatus();
+
+function setEditorStatus(msg, type) {
+  if (!editorStatus) return;
+  editorStatus.textContent = msg || "";
+  editorStatus.className = "status editor-status";
+  if (type === "error") editorStatus.classList.add("error");
+  if (type === "ok") editorStatus.classList.add("ok");
+}
+
 function setPublishingEnabled(enabled) {
   if (!publishBtn) return;
   publishBtn.disabled = !enabled;
   publishBtn.classList.toggle("disabled", !enabled);
 }
 
+function updatePublishButtonState() {
+  setPublishingEnabled(!isUploadingBanner && !isUploadingEditorImage);
+}
+
 function isEditorEmpty() {
-  return quill.getText().trim().length === 0;
+  const hasText = quill.getText().trim().length > 0;
+  const hasImage = !!quill.root.querySelector("img");
+  return !hasText && !hasImage;
+}
+
+function normalizeExternalUrl(url) {
+  const trimmedUrl = (url || "").trim();
+  if (!trimmedUrl) return "";
+
+  const normalizedUrl = /^https?:\/\//i.test(trimmedUrl)
+    ? trimmedUrl
+    : `https://${trimmedUrl}`;
+
+  try {
+    const parsedUrl = new URL(normalizedUrl);
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) return "";
+    if (!parsedUrl.hostname) return "";
+    return parsedUrl.href;
+  } catch {
+    return "";
+  }
 }
 
 function hasBanner() {
@@ -91,6 +167,96 @@ async function deleteBannerOnServer(urlToDelete) {
   } catch (e) {
     console.warn("Could not delete banner from server:", e);
   }
+}
+
+async function uploadEditorImage(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch("/upload-content-image", {
+    method: "POST",
+    body: formData
+  });
+
+  const raw = await res.text();
+  let data = {};
+  try { data = JSON.parse(raw); } catch {}
+
+  if (!res.ok) {
+    const msg = data?.error || raw || `Upload failed (HTTP ${res.status})`;
+    throw new Error(msg);
+  }
+  if (!data.url) throw new Error("Server did not return a url");
+
+  return data.url;
+}
+
+function handleEditorImageUpload() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+
+  input.addEventListener("change", async () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setEditorStatus("Please choose an image file.", "error");
+      return;
+    }
+
+    const range = quill.getSelection(true);
+
+    try {
+      isUploadingEditorImage = true;
+      updatePublishButtonState();
+      setEditorStatus("Uploading image...", "");
+
+      const imageUrl = await uploadEditorImage(file);
+      quill.insertEmbed(range.index, "image", imageUrl, "user");
+      quill.setSelection(range.index + 1, 0, "silent");
+      setEditorStatus("Image added to content.", "ok");
+    } catch (err) {
+      setEditorStatus(`Image upload error: ${err.message}`, "error");
+      console.error("Editor image upload error:", err);
+    } finally {
+      isUploadingEditorImage = false;
+      updatePublishButtonState();
+    }
+  });
+
+  input.click();
+}
+
+function handleEditorButtonInsert() {
+  const range = quill.getSelection(true);
+  const selectedText = quill.getText(
+    range.index,
+    range.length
+  ).trim();
+
+  const buttonText = window.prompt("Button text", selectedText || "Learn more");
+  if (!buttonText?.trim()) return;
+
+  const buttonUrl = normalizeExternalUrl(window.prompt("External link URL", "https://"));
+  if (!buttonUrl) {
+    alert("Please enter a valid external link.");
+    return;
+  }
+
+  if (range.length > 0) {
+    quill.deleteText(range.index, range.length, "user");
+  }
+
+  quill.insertText(range.index, buttonText.trim(), "contentButton", buttonUrl, "user");
+  quill.insertText(range.index + buttonText.trim().length, "\n", "user");
+  quill.setSelection(range.index + buttonText.trim().length + 1, 0, "silent");
+}
+
+if (contentButtonToolbarBtn) {
+  contentButtonToolbarBtn.setAttribute("type", "button");
+  contentButtonToolbarBtn.setAttribute("title", "Insert button link");
+  contentButtonToolbarBtn.textContent = "Button";
 }
 
 // Hydrate existing content/banner for edit screens
@@ -155,7 +321,7 @@ bannerFile?.addEventListener("change", async () => {
 
   try {
     isUploadingBanner = true;
-    setPublishingEnabled(false);
+    updatePublishButtonState();
     setStatus("Uploading banner...", "");
 
     const res = await fetch("/upload-banner", { method: "POST", body: formData });
@@ -188,14 +354,14 @@ bannerFile?.addEventListener("change", async () => {
     updateBannerControls();
   } finally {
     isUploadingBanner = false;
-    setPublishingEnabled(true);
+    updatePublishButtonState();
   }
 });
 
 postForm?.addEventListener("submit", (e) => {
-  if (isUploadingBanner) {
+  if (isUploadingBanner || isUploadingEditorImage) {
     e.preventDefault();
-    alert("Banner is still uploading.");
+    alert("An image is still uploading.");
     return;
   }
 
